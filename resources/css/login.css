@@ -1,0 +1,75 @@
+
+        body,
+        html {
+            height: 100%;
+        }
+
+        .h-custom-screen {
+            min-height: 100vh;
+        }
+
+        /* --- LEFT PANEL (Marketing) --- */
+        .marketing-panel {
+            padding: 3rem 4rem;
+            position: relative;
+        }
+
+        .marketing-content {
+            z-index: 2;
+            position: relative;
+        }
+
+        .glass-square-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        /* --- RIGHT PANEL (Form) --- */
+        .login-panel {
+            /* background-color: #fff; */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+        }
+        /* Separator Line */
+        .separator {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            /* color: #999; */
+            font-size: 0.75rem;
+            /* margin: 1.5rem 0; */
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .separator::before,
+        .separator::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--muted-bg-color) !important;
+        }
+
+        .separator:not(:empty)::before {
+            margin-right: 1em;
+        }
+
+        .separator:not(:empty)::after {
+            margin-left: 1em;
+        }
+
+
+body.theme-light {
+    background-color: #3b5df6 !important;
+}

@@ -1,0 +1,165 @@
+function ajaxRequest(params) {
+    const token = localStorage.getItem('finance_auth_token');
+    const url = new URL(params.url);
+
+    url.searchParams.set('search', params.data.search || '');
+    url.searchParams.set('page', (params.data.offset / params.data.limit) + 1);
+    url.searchParams.set('limit', params.data.limit);
+
+    const month = document.getElementById('month-filter')?.value;
+    const year = document.getElementById('year-filter')?.value;
+    if (month) url.searchParams.set('month', month);
+    if (year) url.searchParams.set('year', year);
+
+    let filters = 
+        {
+        "debit_accounts": (selectedDebitAccounts),
+        "credit_accounts": (selectedCreditAccounts),
+        };
+
+        url.searchParams.set(
+        'filters',
+        JSON.stringify(filters)
+    );
+    
+// if (selectedDebitAccounts.length) {
+//     url.searchParams.set(
+//         'debit_accounts',
+//         JSON.stringify(selectedDebitAccounts)
+//     );
+// }
+
+// if (selectedCreditAccounts.length) {
+//     url.searchParams.set(
+//         'credit_accounts',
+//         JSON.stringify(selectedCreditAccounts)
+//     );
+// }
+
+
+    fetch(url, {
+        headers: {
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        params.success(data);
+    })
+    .catch(() => params.error());
+}
+window.ajaxRequest = ajaxRequest;
+
+function responseHandler(res) {
+    return {
+        total: res.total,
+        rows: res.data,
+        footer: res.footer
+    };
+}
+window.responseHandler = responseHandler;
+
+function footerLabel() {
+    return '<strong>Totales</strong>';
+}
+window.footerLabel = footerLabel;
+
+function footerNullText() {
+    return '';
+}
+window.footerNullText = footerNullText;
+
+function footerSum() {
+    const field = this.field;
+    const footerData = $('#journal-table').bootstrapTable('getFooterData');
+    if (footerData && footerData.length > 0) {
+        const value = footerData[0][field];
+        if (value !== null && value !== undefined) {
+            const number = parseFloat(value);
+            return '<strong>' + number.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }) + '</strong>';
+        }
+    }
+    return '<strong>-</strong>';
+}
+window.footerSum = footerSum;
+
+document.addEventListener('DOMContentLoaded', function () {
+    const $table = $('#journal-table');
+    if ($table.length) {
+                $table.bootstrapTable(tableOptions);
+    }
+    $('#month-filter, #year-filter').on('change', function () {
+        $table.bootstrapTable('refresh', {
+            pageNumber: 1
+        });
+    });
+});
+
+// FILTER
+let selectedDebitAccounts = [];
+let selectedCreditAccounts = [];
+
+function loadAccountFilters() {
+    fetch(`${api_url}journal/filters`, {
+        headers: {
+            'Accept': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('finance_auth_token')}`
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        renderCheckboxList('#filter-debit-accounts', data.debit_accounts, 'debit');
+        renderCheckboxList('#filter-credit-accounts', data.credit_accounts, 'credit');
+    });
+}
+
+function renderCheckboxList(container, items, key) {
+    const el = document.querySelector(container);
+    el.innerHTML = items.map(v => `
+        <div class="form-check">
+            <input class="form-check-input"
+                   type="checkbox"
+                   value="${v}"
+                   data-filter="${key}">
+            <label class="form-check-label">${v}</label>
+        </div>
+    `).join('');
+}
+
+document.addEventListener('DOMContentLoaded', loadAccountFilters);
+
+function getChecked(key) {
+    return [...document.querySelectorAll(`input[data-filter="${key}"]:checked`)]
+        .map(i => i.value);
+}
+
+function setAll(key, checked) {
+    document.querySelectorAll(`input[data-filter="${key}"]`)
+        .forEach(i => i.checked = checked);
+}
+
+document.getElementById('debit-clear').onclick = () => setAll('debit', false);
+document.getElementById('credit-clear').onclick = () => setAll('credit', false);
+
+document.getElementById('debit-select-all').onclick = () => setAll('debit', true);
+document.getElementById('credit-select-all').onclick = () => setAll('credit', true);
+
+document.getElementById('filters-reset').onclick = () => {
+    setAll('debit', false);
+    setAll('credit', false);
+    selectedDebitAccounts = [];
+    selectedCreditAccounts = [];
+    $('#journal-table').bootstrapTable('refresh', { pageNumber: 1 });
+};
+
+document.getElementById('filters-apply').onclick = () => {
+    selectedDebitAccounts = getChecked('debit');
+    selectedCreditAccounts = getChecked('credit');
+
+    $('#journal-table').bootstrapTable('refresh', { pageNumber: 1 });
+
+    bootstrap.Offcanvas.getInstance(
+        document.getElementById('offcanvasFilter')
+    ).hide();
+};
