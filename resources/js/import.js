@@ -1497,7 +1497,7 @@ function readXlsx(file) {
         // // console.table(rows);
         const normalized = rows.map(normalizeRow);
         // console.log(normalized);
-        // importEntries(normalized);
+        importEntries(normalized);
 
 
         const accounts = buildAccounts(rows);
