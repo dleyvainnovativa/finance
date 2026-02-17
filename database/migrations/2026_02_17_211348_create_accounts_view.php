@@ -42,7 +42,7 @@ return new class extends Migration
     END AS type_account,
     created_at,
     updated_at
-FROM finanzas.chart_of_accounts;
+FROM chart_of_accounts;
         ");
     }
 
