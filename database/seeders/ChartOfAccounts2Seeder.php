@@ -36,6 +36,7 @@ class ChartOfAccounts2Seeder extends Seeder
         foreach ($accounts as $account) {
             // Insert the parent account and get its ID
             DB::table('chart_of_accounts')->insert([
+                'id' => $account['id'],
                 'user_id' => $user->id,
                 'parent_id' => $account['parent_id'],
                 'code' => $account['code'],

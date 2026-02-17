@@ -6,11 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;
 use App\Models\ChartOfAccount;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class JournalEntryController extends Controller
 {
+
     public function index(Request $request)
     {
         $userId = $request->user()->id;
@@ -21,141 +23,75 @@ class JournalEntryController extends Controller
         $limit = (int) $request->get('limit', 10);
         $page = (int) $request->get('page', 1);
 
-        $query = JournalEntry::with(['lines.chartOfAccount'])
+        $query = DB::table('journal')
             ->where('user_id', $userId);
 
-        // ... (Toda tu lógica de filtros es correcta y no necesita cambios)
         if ($month && $year) {
             $query->whereMonth('entry_date', $month)->whereYear('entry_date', $year);
         }
+
         if ($search) {
-            $query->where(function ($qs) use ($search) {
-                $qs->where('description', 'like', "%{$search}%")->orWhere('reference', 'like', "%{$search}%")->orWhereHas('lines.chartOfAccount', function ($qa) use ($search) {
-                    $qa->where('name', 'like', "%{$search}%")->orWhere('code', 'like', "%{$search}%");
-                });
+            // La búsqueda ahora es más simple y directa sobre las columnas de la vista.
+            $query->where(function ($q) use ($search) {
+                $q->where('description', 'like', "%{$search}%")
+                    ->orWhere('debit_account_name', 'like', "%{$search}%")
+                    ->orWhere('debit_account_code', 'like', "%{$search}%")
+                    ->orWhere('credit_account_name', 'like', "%{$search}%")
+                    ->orWhere('credit_account_code', 'like', "%{$search}%");
             });
         }
+
         $debitAccounts = $filters['debit_accounts'] ?? null;
         $creditAccounts = $filters['credit_accounts'] ?? null;
-        if ($debitAccounts && $creditAccounts) {
+
+        // La lógica OR para los filtros de cuenta ahora es mucho más legible.
+        if ($debitAccounts || $creditAccounts) {
             $query->where(function ($q) use ($debitAccounts, $creditAccounts) {
-                $q->whereHas('lines', function ($ql) use ($debitAccounts) {
-                    $ql->where('debit', '>', 0)->whereHas('chartOfAccount', function ($qa) use ($debitAccounts) {
-                        $qa->whereIn('name', $debitAccounts);
-                    });
-                })->orWhereHas('lines', function ($ql) use ($creditAccounts) {
-                    $ql->where('credit', '>', 0)->whereHas('chartOfAccount', function ($qa) use ($creditAccounts) {
-                        $qa->whereIn('name', $creditAccounts);
-                    });
-                });
-            });
-        } elseif ($debitAccounts) {
-            $query->whereHas('lines', function ($ql) use ($debitAccounts) {
-                $ql->where('debit', '>', 0)->whereHas('chartOfAccount', function ($qa) use ($debitAccounts) {
-                    $qa->whereIn('name', $debitAccounts);
-                });
-            });
-        } elseif ($creditAccounts) {
-            $query->whereHas('lines', function ($ql) use ($creditAccounts) {
-                $ql->where('credit', '>', 0)->whereHas('chartOfAccount', function ($qa) use ($creditAccounts) {
-                    $qa->whereIn('name', $creditAccounts);
-                });
+                if ($debitAccounts) {
+                    $q->whereIn('debit_account_name', $debitAccounts);
+                }
+                if ($creditAccounts) {
+                    // Si ya había un filtro de débito, une este con OR.
+                    $q->orWhereIn('credit_account_name', $creditAccounts);
+                }
             });
         }
 
-
+        // --- PASO 3: Calcular Totales (misma lógica, consulta más simple) ---
         $totalsQuery = clone $query;
-        $entries = $query->orderBy('entry_date')->paginate($limit, ['*'], 'page', $page);
-        $allEntriesForTotals = $totalsQuery->with(['lines'])->get();
+        // La consulta a la DB es más rápida porque no hay JOINs de Eloquent.
+        $allEntriesForTotals = $totalsQuery->get();
+
         $totalDebit  = 0;
         $totalCredit = 0;
 
-        // Tu lógica de totales es excelente y funciona como se espera.
+        // Tu lógica de totales es perfecta y la reutilizamos aquí.
         foreach ($allEntriesForTotals as $entry) {
-            $debitLine  = $entry->lines->firstWhere('debit', '>', 0);
-            $creditLine = $entry->lines->firstWhere('credit', '>', 0);
-            switch ($entry->entry_type) {
-                case 'income':
-                case 'opening_balance':
-                    if ($debitLine) {
-                        $totalDebit += $debitLine->debit;
-                    }
-                    break;
-                case 'expense':
-                    if ($creditLine) {
-                        $totalCredit += $creditLine->credit;
-                    }
-                    break;
-                case 'opening_balance_credit':
-                    if ($creditLine) {
-                        $totalCredit += $creditLine->credit;
-                    }
-                    break;
-                case 'transfer':
-                    if (!empty($debitAccounts) && $debitLine && in_array($debitLine->chartOfAccount?->name, $debitAccounts)) {
-                        $totalDebit += $debitLine->debit;
-                    } elseif (!empty($creditAccounts) && $creditLine && in_array($creditLine->chartOfAccount?->name, $creditAccounts)) {
-                        $totalCredit += $creditLine->credit;
-                    }
-                    break;
-            }
+            $totalDebit += $entry->debit;
+            $totalCredit += $entry->credit;
         }
 
-        // --- SECCIÓN CORREGIDA ---
-        // Usamos `map` en lugar de `flatMap` para asegurar una fila por asiento.
-        $rows = $entries->getCollection()->map(function ($entry) use ($debitAccounts, $creditAccounts) {
-            $debitLine  = $entry->lines->firstWhere('debit', '>', 0);
-            $creditLine = $entry->lines->firstWhere('credit', '>', 0);
-            $amount = $debitLine?->debit ?? $creditLine?->credit ?? 0;
-            $debitAmount = 0;
-            $creditAmount = 0;
+        // --- PASO 4: Paginar y Transformar Filas (misma lógica, datos más simples) ---
+        $entries = $query->orderBy('entry_date')->orderBy('entry_id')->paginate($limit, ['*'], 'page', $page);
+        // dd($entries);
 
-            // Se aplica la misma lógica de los totales a cada fila
-            switch ($entry->entry_type) {
-                case 'income':
-                case 'opening_balance':
-                    $debitAmount = $amount;
-                    break;
-                case 'expense':
-                    $creditAmount = $amount;
-                    break;
-                case 'opening_balance_credit':
-                    $creditAmount = $amount;
-                    break;
-                case 'transfer': // ESTA ES LA LÓGICA QUE FALTABA
-                    if (!empty($debitAccounts) && $debitLine && in_array($debitLine->chartOfAccount?->name, $debitAccounts)) {
-                        // Si la cuenta filtrada es la que recibió el débito, es un cargo.
-                        $debitAmount = $debitLine->debit;
-                    } elseif (!empty($creditAccounts) && $creditLine && in_array($creditLine->chartOfAccount?->name, $creditAccounts)) {
-                        // Si la cuenta filtrada es la que recibió el crédito, es un abono.
-                        $creditAmount = $creditLine->credit;
-                    }
-                    // Nota: Si no hay filtro, los cargos y abonos para transferencias serán 0, lo cual es correcto
-                    // ya que no se tiene la perspectiva de una cuenta específica.
-                    break;
-            }
+        $rows = $entries->getCollection()->map(function ($entry) use ($debitAccounts, $creditAccounts) {
 
             return [
-                'id'                  => $entry->id,
-                'entry_date'          => $entry->entry_date->format('d/m/Y'),
-                'entry_type_label'    => match (strtoupper($entry->entry_type)) {
-                    'INCOME'          => 'Ingreso',
-                    'EXPENSE'         => 'Egreso',
-                    'TRANSFER'        => 'Transferencia',
-                    'OPENING_BALANCE' => 'Saldo Inicial',
-                    default           => $entry->entry_type,
-                },
+                'id'                  => $entry->entry_id,
+                'entry_date'          => Carbon::parse($entry->entry_date)->format('d/m/Y'),
+                'entry_type_label'    => $entry->entry_type,
                 'description'         => $entry->description,
-                'debit_account_name'  => $debitLine?->chartOfAccount?->name,
-                'debit_account_code'  => $debitLine?->chartOfAccount?->code,
-                'credit_account_name' => $creditLine?->chartOfAccount?->name,
-                'credit_account_code' => $creditLine?->chartOfAccount?->code,
-                'debit'               => $debitAmount,
-                'credit'              => $creditAmount,
+                'debit_account_name'  => $entry->debit_account_name,
+                'debit_account_code'  => $entry->debit_account_code,
+                'credit_account_name' => $entry->credit_account_name,
+                'credit_account_code' => $entry->credit_account_code,
+                'debit'               => $entry->debit,
+                'credit'              => $entry->credit,
             ];
         });
 
-
+        // --- PASO 5: Devolver el JSON (sin cambios) ---
         return response()->json([
             'total'  => $entries->total(),
             'data'   => $rows,
@@ -173,8 +109,6 @@ class JournalEntryController extends Controller
             ],
         ]);
     }
-
-
 
     public function filters(Request $request)
     {
@@ -220,7 +154,7 @@ class JournalEntryController extends Controller
     {
         $request->validate([
             'entry_date' => ['required', 'date'],
-            'entry_type' => ['required', 'in:INGRESO,EGRESO,TRASPASO,SALDO INICIAL,SALDO INICIAL CREDITO'],
+            'entry_type' => ['required', 'in:income,expense,opening_balance,opening_balance_credit,transfer'],
             'amount' => ['required', 'numeric', 'min:0.01'],
             'debit_account_id' => ['required', 'exists:chart_of_accounts,id'],
             'credit_account_id' => ['required', 'exists:chart_of_accounts,id'],
@@ -237,6 +171,7 @@ class JournalEntryController extends Controller
             $entry = JournalEntry::create([
                 'user_id' => $user->id,
                 'entry_date' => $request->entry_date,
+                'entry_type' => $request->entry_type,
                 'description' => $request->description,
                 'reference' => $request->reference,
             ]);
@@ -327,5 +262,102 @@ class JournalEntryController extends Controller
         return response()->json([
             'message' => 'Journal entries imported successfully'
         ], 201);
+    }
+
+    public function voucher(Request $request)
+    {
+        $userId = $request->user()->id;
+        $month = $request->get('month');
+        $year = $request->get('year');
+        $search = $request->get('search');
+        $filters = json_decode($request->get('filters'), true) ?? [];
+        $limit = (int) $request->get('limit', 10);
+        $page = (int) $request->get('page', 1);
+
+        $query = DB::table('journal_voucher')
+            ->where('user_id', $userId);
+
+        if ($month && $year) {
+            $query->whereMonth('entry_date', $month)->whereYear('entry_date', $year);
+        }
+
+        if ($search) {
+            // La búsqueda ahora es más simple y directa sobre las columnas de la vista.
+            $query->where(function ($q) use ($search) {
+                $q->where('description', 'like', "%{$search}%")
+                    ->orWhere('debit_account_name', 'like', "%{$search}%")
+                    ->orWhere('debit_account_code', 'like', "%{$search}%")
+                    ->orWhere('credit_account_name', 'like', "%{$search}%")
+                    ->orWhere('credit_account_code', 'like', "%{$search}%");
+            });
+        }
+
+        $debitAccounts = $filters['debit_accounts'] ?? null;
+        $creditAccounts = $filters['credit_accounts'] ?? null;
+
+        // La lógica OR para los filtros de cuenta ahora es mucho más legible.
+        if ($debitAccounts || $creditAccounts) {
+            $query->where(function ($q) use ($debitAccounts, $creditAccounts) {
+                if ($debitAccounts) {
+                    $q->whereIn('debit_account_name', $debitAccounts);
+                }
+                if ($creditAccounts) {
+                    // Si ya había un filtro de débito, une este con OR.
+                    $q->orWhereIn('credit_account_name', $creditAccounts);
+                }
+            });
+        }
+
+        // --- PASO 3: Calcular Totales (misma lógica, consulta más simple) ---
+        $totalsQuery = clone $query;
+        // La consulta a la DB es más rápida porque no hay JOINs de Eloquent.
+        $allEntriesForTotals = $totalsQuery->get();
+
+        $totalDebit  = 0;
+        $totalCredit = 0;
+
+        // Tu lógica de totales es perfecta y la reutilizamos aquí.
+        foreach ($allEntriesForTotals as $entry) {
+            $totalDebit += $entry->debit;
+            $totalCredit += $entry->credit;
+        }
+
+        // --- PASO 4: Paginar y Transformar Filas (misma lógica, datos más simples) ---
+        $entries = $query->orderBy('entry_date')->orderBy('entry_id')->paginate($limit, ['*'], 'page', $page);
+        // dd($entries);
+
+        $rows = $entries->getCollection()->map(function ($entry) use ($debitAccounts, $creditAccounts) {
+
+            return [
+                'id'                  => $entry->entry_id,
+                'entry_date'          => Carbon::parse($entry->entry_date)->format('d/m/Y'),
+                'entry_type_label'    => $entry->entry_type,
+                'description'         => $entry->description,
+                'debit_account_name'  => $entry->debit_account_name,
+                'debit_account_code'  => $entry->debit_account_code,
+                'credit_account_name' => $entry->credit_account_name,
+                'credit_account_code' => $entry->credit_account_code,
+                'debit'               => $entry->debit,
+                'credit'              => $entry->credit,
+            ];
+        });
+
+        // --- PASO 5: Devolver el JSON (sin cambios) ---
+        return response()->json([
+            'total'  => $entries->total(),
+            'data'   => $rows,
+            'filters' => $filters,
+            'footer' => [
+                'description' => 'TOTAL',
+                'debit'  => $totalDebit,
+                'credit' => $totalCredit,
+                'credit_account_code' => "",
+                'entry_date' => "",
+                'entry_type_label' => "",
+                'debit_account_name' => "",
+                'debit_account_code' => "",
+                'credit_account_name' => "",
+            ],
+        ]);
     }
 }

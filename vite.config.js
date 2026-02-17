@@ -10,6 +10,7 @@ export default defineConfig({
                 'resources/js/import.js',
                 'resources/js/entry.js',
                 'resources/js/journal.js',
+                'resources/js/voucher.js',
                 'resources/js/trial-balance.js',
             ],
             refresh: true,

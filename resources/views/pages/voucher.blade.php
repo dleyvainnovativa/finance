@@ -3,7 +3,7 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-center mb-2">
     <div>
-        <h3 id="main_title" class="display">Estado de Cuenta</h3>
+        <h3 id="main_title" class="display">Pólizas Contables</h3>
         <p class="text-muted pb-0 mb-0">Manage your journal entries</p>
     </div>
 
@@ -32,7 +32,7 @@
         <div class="table-responsive">
             <table id="journal-table"
                 class="table text-bg-dark card-dark border-dark"
-                data-url="{{ route('api.journal') }}"
+                data-url="{{ route('api.voucher') }}"
                 data-pagination="true"
                 data-side-pagination="server"
                 data-page-size="10"
@@ -64,6 +64,6 @@
     </div>
 </div>
 @include("offcanvas.journal_filters")
-@vite(["resources/js/journal.js"])
+@vite(["resources/js/voucher.js"])
 
 @endsection

@@ -26,10 +26,11 @@
                             <label class="form-label">Tipo de Movimiento</label>
                             <select id="entry_type" class="form-select" required>
                                 <option value="null" disabled selected>Seleccione...</option>
-                                <option value="INGRESO">INGRESO</option>
-                                <option value="EGRESO">EGRESO</option>
-                                <option value="TRASPASO">TRASPASO</option>
-                                <option value="SALDO INICIAL">SALDO INICIAL</option>
+                                <option value="income">INGRESO</option>
+                                <option value="expense">EGRESO</option>
+                                <option value="transfer">TRASPASO</option>
+                                <option value="opening_balance">SALDO INICIAL</option>
+                                <option value="opening_balance_credit">SALDO INICIAL CREDITO</option>
                             </select>
                         </div>
 
@@ -45,13 +46,13 @@
 
                         <!-- Debit -->
                         <div class="col-md-6">
-                            <label class="form-label">Cuenta Debe</label>
+                            <label class="form-label">Forma de Pago</label>
                             <select name="debit_account_id" id="debit_account_id" class="form-select" required></select>
                         </div>
 
                         <!-- Credit -->
                         <div class="col-md-6">
-                            <label class="form-label">Cuenta Haber</label>
+                            <label class="form-label">Cuenta Abono</label>
                             <select name="credit_account_id" id="credit_account_id" class="form-select" required></select>
                         </div>
 

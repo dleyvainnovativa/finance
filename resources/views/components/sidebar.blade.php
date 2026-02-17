@@ -33,12 +33,18 @@
             <a href="{{ route('home') }}/journal" class="list-group-item list-group-item-action">
                 <small class="text-dark">
                     <i class="fa-solid fa-right-left text-primary start-icon"></i>
-                    Cargos y Abonos
+                    Estado de Cuenta
                 </small>
             </a>
 
             <div class="sidebar-section-label text-muted fw-bold">Reportes</div>
 
+            <a href="{{ route('home') }}/voucher" class="list-group-item list-group-item-action">
+                <small class="text-dark">
+                    <i class="fa-solid fa-file-invoice text-primary start-icon"></i>
+                    Pólizas Contables
+                </small>
+            </a>
             <a href="{{ route('home') }}/trial_balance" class="list-group-item list-group-item-action">
                 <small class="text-dark">
                     <i class="fa-solid fa-scale-balanced text-primary start-icon"></i>

@@ -29,6 +29,9 @@ Route::middleware('firebase.auth')->group(function () {
     Route::get('/journal', function () {
         return view('pages.journal');
     })->name("journal");
+    Route::get('/voucher', function () {
+        return view('pages.voucher');
+    })->name("voucher");
     Route::get('/trial_balance', function () {
         return view('pages.trial_balance');
     })->name("trial_balance");

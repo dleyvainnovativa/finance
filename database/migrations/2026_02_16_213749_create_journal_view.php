@@ -1,14 +1,19 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         DB::statement("
-            CREATE OR REPLACE VIEW ledger_rows AS
+            CREATE OR REPLACE VIEW journal AS
             WITH main_table AS (
 SELECT
     je.id AS entry_id,
@@ -16,8 +21,10 @@ SELECT
     je.entry_date,
     je.entry_type,
     je.description,
+    da.id as debit_account_id,
     da.name AS debit_account_name,
     da.code AS debit_account_code,
+    ca.id as credit_account_id,
     ca.name AS credit_account_name,
     ca.code AS credit_account_code,
     CASE
@@ -26,7 +33,7 @@ SELECT
         ELSE 0
     END AS debit,
     CASE
-        WHEN je.entry_type IN ('expense', 'opening_balance_credit') THEN
+        WHEN je.entry_type IN ('expense', 'asset_acquisition', 'opening_balance_credit') THEN
             COALESCE(dl.debit, cl.credit, 0)
         ELSE 0
     END AS credit
@@ -49,8 +56,10 @@ SELECT
     je.entry_date,
     je.entry_type,
     je.description,
+        da.id as debit_account_id,
     da.name AS debit_account_name,
     da.code AS debit_account_code,
+        ca.id as credit_account_id,
     ca.name AS credit_account_name,
     ca.code AS credit_account_code,
     CASE
@@ -62,7 +71,7 @@ SELECT
         ELSE 0
     END AS debit,
     CASE
-        WHEN je.entry_type IN ('expense', 'opening_balance_credit') THEN
+        WHEN je.entry_type IN ('expense', 'asset_acquisition', 'opening_balance_credit') THEN
             COALESCE(dl.debit, cl.credit, 0)
         ELSE 0
     END AS credit
@@ -85,8 +94,10 @@ SELECT
     je.entry_date,
     je.entry_type,
     je.description,
+        ca.id as debit_account_id,
     ca.name AS debit_account_name,
     ca.code AS debit_account_code,
+        da.id as credit_account_id,
     da.name AS credit_account_name,
     da.code AS credit_account_code,
     CASE
@@ -95,7 +106,7 @@ SELECT
         ELSE 0
     END AS debit,
     CASE
-        WHEN je.entry_type IN ('expense', 'opening_balance_credit') THEN
+        WHEN je.entry_type IN ('expense', 'asset_acquisition', 'opening_balance_credit') THEN
             COALESCE(dl.debit, cl.credit, 0)
 		WHEN je.entry_type = 'transfer'
              AND ca.id IS NOT NULL THEN
@@ -122,6 +133,6 @@ ORDER BY entry_date, entry_id;
 
     public function down(): void
     {
-        DB::statement('DROP VIEW IF EXISTS ledger_rows');
+        DB::statement('DROP VIEW IF EXISTS journal');
     }
 };
