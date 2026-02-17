@@ -178,21 +178,41 @@ class JournalEntryController extends Controller
 
             $amount = $request->amount;
 
-            // 2️⃣ Create debit line
-            JournalEntryLine::create([
-                'journal_entry_id' => $entry->id,
-                'chart_of_account_id' => $request->debit_account_id,
-                'debit' => $amount,
-                'credit' => 0,
-            ]);
+            if ($request->entry_type == "opening_balance" || $request->entry_type == "opening_balance_credit") {
+                if ($request->entry_type == "opening_balance") {
+                    // 2️⃣ Create debit line
+                    JournalEntryLine::create([
+                        'journal_entry_id' => $entry->id,
+                        'chart_of_account_id' => $request->debit_account_id,
+                        'debit' => $amount,
+                        'credit' => 0,
+                    ]);
+                } else {
+                    JournalEntryLine::create([
+                        'journal_entry_id' => $entry->id,
+                        'chart_of_account_id' => $request->debit_account_id,
+                        'debit' => 0,
+                        'credit' => $amount,
+                    ]);
+                }
+            } else {
 
-            // 3️⃣ Create credit line
-            JournalEntryLine::create([
-                'journal_entry_id' => $entry->id,
-                'chart_of_account_id' => $request->credit_account_id,
-                'debit' => 0,
-                'credit' => $amount,
-            ]);
+                // 2️⃣ Create debit line
+                JournalEntryLine::create([
+                    'journal_entry_id' => $entry->id,
+                    'chart_of_account_id' => $request->debit_account_id,
+                    'debit' => $amount,
+                    'credit' => 0,
+                ]);
+
+                // 3️⃣ Create credit line
+                JournalEntryLine::create([
+                    'journal_entry_id' => $entry->id,
+                    'chart_of_account_id' => $request->credit_account_id,
+                    'debit' => 0,
+                    'credit' => $amount,
+                ]);
+            }
         });
         return response()->json($request, 201);
 
