@@ -797,6 +797,9 @@ button.gridjs-sort-neutral{
     border-radius: .5rem;
     overflow-x:initial;
 }
+.fixed-table-container:has(.fixed-table-custom-view:not([style*="display: none"])) {
+    border: none;
+}
 
 .bootstrap-table table tbody tr {
     cursor: pointer;

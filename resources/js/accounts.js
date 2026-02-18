@@ -1,77 +1,65 @@
-(() => {
-    'use strict'
-    const forms = document.querySelectorAll('#account-form.needs-validation')
-    Array.from(forms).forEach(form => {
-        form.addEventListener('submit', async event => {
-            const submitButton = form.querySelector('button[type="submit"]');
-
-            setButtonLoading(submitButton, true);
-            event.preventDefault(); // always prevent native submit
-
-            if (!form.checkValidity()) {
-                event.stopPropagation();
-                await setButtonLoading(submitButton, false);
-            } else {
-                addAccount(form);
-                await setButtonLoading(submitButton, false);
-            }
-            form.classList.add('was-validated');
-        }, false);
-    });
-})();
-
-let accountsGrid = null;
-
-
-function initRequest() {
-    const url = `${api_url}accounts`;
+function ajaxRequest(params) {
     const token = localStorage.getItem('finance_auth_token');
+    const url = new URL(params.url);
+    url.searchParams.set('search', params.data.search || '');
+    url.searchParams.set('page', (params.data.offset / params.data.limit) + 1);
+    url.searchParams.set('limit', params.data.limit);
+    fetch(url, {
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
     let accounts_list = [];
-    if (!accountsGrid) {
-        accountsGrid = new Grid({
-            columns: ['Acciones', 'Código', 'Nombre', 'Tipo'],
-            search: true,
-            sort: true,
-            pagination: { limit: 10 },
-            server: {
-                url: url,
-                headers: {
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                then: data => {
-                    const rows = data.data.map(account => [
-                        html(`
-                            <div class="row g-1">
-                                <div class="col-auto">
-                                    <button class="btn btn-primary btn-sm" onclick="editAccount('${account.id}')">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </div>
-                                <div class="col-auto">
-                                    <button class="btn btn-danger btn-sm" onclick="deleteAccount('${account.id}')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        `),
-                        account.code,
-                        account.name,
-                        html(`<span class="badge text-bg-primary">${account.type}</span>`),
-                    ]);
 
                     window.accounts_list = data.data;
+
                     buildSelect(data);
-                    return rows;
-                },
-                total: data => data.total
-            }
-        }).render(document.getElementById('accountsGrid'));
-    } else {
-        // 🔥 this triggers a re-fetch + re-render
-        accountsGrid.updateConfig({}).forceRender();
-    }
+
+            params.success(data);
+        })
+        .catch(() => params.error());
 }
+window.ajaxRequest = ajaxRequest;
+
+
+function actionsFormatter(value, row) {
+    return `<div class="btn-group btn-group-sm">
+                        <button
+                            class="btn btn-outline-primary"
+                            onclick="editAccount(${value})"
+                            title="Editar cuenta">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+
+                        <button
+                            class="btn btn-outline-danger"
+                            onclick="removeAccount(${value})"
+                            title="Eliminar cuenta">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>`;
+}
+window.actionsFormatter=actionsFormatter
+
+
+function responseHandler(res) {
+    return {
+        total: res.total,
+        rows: res.data,
+    };
+}
+window.responseHandler = responseHandler;
+
+document.addEventListener('DOMContentLoaded', function () {
+    const $table = $('#journal-table');
+    if ($table.length) {
+        $table.bootstrapTable(tableOptions);
+    }
+});
+
 
 window.accountChoices = null;
 
@@ -206,4 +194,33 @@ async function addAccount(form) {
     }
 }
 
-initRequest();
+window.customViewFormatter = data => {
+    const template = $('#tableTemplate').html()
+    let view = '';
+    $.each(data, function (i, row) {
+        const accountName = row.debit_account_name ?? row.credit_account_name ?? '—';
+        const accountCode = row.debit_account_code ?? row.credit_account_code ?? '—';
+        let amount = '0.00';
+        let amountClass = 'text-muted';
+        if (parseFloat(row.debit) > 0) {
+            amount = parseFloat(row.debit).toFixed(2)
+            amountClass = 'text-success'
+        } else if (parseFloat(row.credit) > 0) {
+            amount = parseFloat(row.credit).toFixed(2)
+            amountClass = 'text-danger'
+        }
+        let icon = getEntryIcon(row.entry_type);
+        let edit = `onclick="editAccount(${row.id})"`;
+        let remove = `onclick="removeAccount(${row.id})"`;
+        view += template
+            .replace('%id%', row.id)
+            .replace('%icon%', getEntryIcon(row.type))
+            .replace('%account_name%', row.name)
+            .replace('%edit%', edit)
+            .replace('%remove%', remove)
+            .replace('%account_code%', row.code)
+            .replace('%type_label%', row.type_label)
+            .replace('%nature_label%', row.nature_label)
+    });
+    return `<div class="row g-4">${view}</div>`;
+}

@@ -44,18 +44,21 @@
                 data-show-refresh="true"
                 data-show-footer="true"
                 data-response-handler="responseHandler"
+                data-show-custom-view="true"
+                data-custom-view="customViewFormatter"
+                data-show-custom-view-button="true"
                 data-ajax="ajaxRequest">
                 <thead>
                     <tr>
-                        <th data-field="entry_date" data-footer-formatter="footerNullText" data-sortable="true">Fecha</th>
-                        <th data-field="entry_type_label" data-footer-formatter="footerNullText" data-sortable="true">Tipo</th>
-                        <th data-field="debit_account_name" data-footer-formatter="footerNullText" data-sortable="true">Cta Cargo</th>
-                        <th data-field="debit_account_code" data-footer-formatter="footerNullText" data-sortable="true">ID Contable</th>
-                        <th data-field="credit_account_name" data-footer-formatter="footerNullText" data-sortable="true">Cta Abono</th>
-                        <th data-field="credit_account_code" data-footer-formatter="footerNullText" data-sortable="true">ID Contable</th>
-                        <th data-field="description" data-footer-formatter="footerLabel" data-falign="left">Concepto</th>
-                        <th data-field="debit" data-footer-formatter="footerSum" data-falign="left" data-sortable="true">Cargos</th>
-                        <th data-field="credit" data-footer-formatter="footerSum" data-falign="left" data-sortable="true">Abonos</th>
+                        <th class="" data-field="entry_date" data-footer-formatter="footerNullText" data-sortable="true">Fecha</th>
+                        <th class="" data-field="entry_type_label" data-footer-formatter="footerNullText" data-sortable="true">Tipo</th>
+                        <th class="" data-field="debit_account_name" data-footer-formatter="footerNullText" data-sortable="true">Cta Cargo</th>
+                        <th class="" data-field="debit_account_code" data-footer-formatter="footerNullText" data-sortable="true">ID Contable</th>
+                        <th class="" data-field="credit_account_name" data-footer-formatter="footerNullText" data-sortable="true">Cta Abono</th>
+                        <th class="" data-field="credit_account_code" data-footer-formatter="footerNullText" data-sortable="true">ID Contable</th>
+                        <th class="" data-field="description" data-footer-formatter="footerLabel" data-falign="left">Concepto</th>
+                        <th class="" data-field="debit" data-footer-formatter="footerSum" data-falign="left" data-sortable="true">Cargos</th>
+                        <th class="" data-field="credit" data-footer-formatter="footerSum" data-falign="left" data-sortable="true">Abonos</th>
                     </tr>
                 </thead>
             </table>
@@ -63,6 +66,34 @@
         </div>
     </div>
 </div>
+
+
+<template id="tableTemplate" class="">
+    <div class="col-12 col-md-12 col-lg-6 col-xl-4">
+        <div class="text-bg-white border border-dark card card-dark h-100 position-relative">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between">
+
+                    <!-- Leading icon -->
+                    <div class="me-3 text-primary fs-4">
+                        %icon%
+                    </div>
+
+                    <!-- Title + subtitle -->
+                    <div class="flex-grow-1">
+                        <div class="fw-semibold">%title%</div>
+                        <div class="text-muted small">%subtitle%</div>
+                    </div>
+
+                    <!-- Trailing amount -->
+                    <div class="ms-3 fw-semibold %amount_class%">
+                        %amount%
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
 @include("offcanvas.journal_filters")
 @vite(["resources/js/journal.js"])
 

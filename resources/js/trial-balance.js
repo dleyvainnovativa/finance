@@ -148,3 +148,45 @@ document.getElementById('filters-apply').onclick = () => {
         document.getElementById('offcanvasFilter')
     ).hide();
 };
+
+
+window.customViewFormatter = data => {
+        const template = $('#tableTemplate').html()
+        let view = ''
+
+        $.each(data, function (i, row) {
+ // Resolve account (debit or credit)
+        const accountName = row.debit_account_name ?? row.credit_account_name ?? '—'
+        const accountCode = row.debit_account_code ?? row.credit_account_code ?? '—'
+
+        // Determine amount + color
+        let amount = '0.00'
+        let amountClass = 'text-muted'
+
+        if (parseFloat(row.debit) > 0) {
+            amount = parseFloat(row.debit).toFixed(2)
+            amountClass = 'text-success'
+        } else if (parseFloat(row.credit) > 0) {
+            amount = parseFloat(row.credit).toFixed(2)
+            amountClass = 'text-danger'
+        }
+        console.log(row);
+        let icon = getEntryIcon(row.entry_type);
+
+        view += template
+            .replace('%icon%', getEntryIcon(row.entry_type))
+.replace('%account_name%', row.account_name)
+.replace('%account_code%', row.account_code)
+.replace('%entry_type_label%', row.entry_type_label)
+.replace('%nature%', row.nature)
+.replace('%opening%', row.opening.toFixed(2))
+.replace('%debit%', row.debit.toFixed(2))
+.replace('%credit%', row.credit.toFixed(2))
+.replace('%total%', row.total.toFixed(2))
+.replace('%total_class%', row.total >= 0 ? 'text-success' : 'text-danger')
+
+
+        })
+
+        return `<div class="row g-4">${view}</div>`
+    }

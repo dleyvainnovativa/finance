@@ -44,10 +44,14 @@
                 data-show-refresh="true"
                 data-show-footer="true"
                 data-response-handler="responseHandler"
+                data-show-custom-view="true"
+                data-custom-view="customViewFormatter"
+                data-show-custom-view-button="true"
                 data-ajax="ajaxRequest">
                 <thead>
                     <tr>
                         <th data-field="entry_type_label" data-footer-formatter="footerNullText" data-sortable="true">Tipo</th>
+                        <th data-visible="false" data-field="entry_type" data-footer-formatter="footerNullText" data-sortable="true">Tipo</th>
                         <th data-field="nature" data-footer-formatter="footerNullText" data-sortable="true">Naturaleza</th>
                         <th data-field="account_name" data-footer-formatter="footerNullText" data-sortable="true">Cta Cargo</th>
                         <th data-field="account_code" data-footer-formatter="footerNullText" data-sortable="true">ID Contable</th>
@@ -62,6 +66,52 @@
         </div>
     </div>
 </div>
+
+<template id="tableTemplate">
+    <div class="col-12 col-md-6 col-xl-4">
+        <div class="card border shadow-sm h-100">
+            <div class="card-body p-3">
+
+                <!-- Header -->
+                <div class="d-flex align-items-center mb-2">
+                    <div class="me-2 fs-4">
+                        %icon%
+                    </div>
+                    <div>
+                        <div class="fw-semibold">%account_name%</div>
+                        <div class="text-muted small">
+                            %account_code% · %entry_type_label% · %nature%
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-2">
+
+                <!-- Amounts -->
+                <div class="row small">
+                    <div class="col-6 text-muted">Saldo inicial</div>
+                    <div class="col-6 text-end">%opening%</div>
+
+                    <div class="col-6 text-muted">Débitos</div>
+                    <div class="col-6 text-end text-success">%debit%</div>
+
+                    <div class="col-6 text-muted">Créditos</div>
+                    <div class="col-6 text-end text-danger">%credit%</div>
+                </div>
+
+                <hr class="my-2">
+
+                <!-- Total -->
+                <div class="d-flex justify-content-between fw-semibold">
+                    <span>Saldo</span>
+                    <span class="%total_class%">%total%</span>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>
+
 @include("offcanvas.journal_filters")
 @vite(["resources/js/trial-balance.js"])
 

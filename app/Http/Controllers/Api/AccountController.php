@@ -6,46 +6,48 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ChartOfAccountResource;
 use Illuminate\Http\Request;
 use App\Models\ChartOfAccount;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
 
 class AccountController extends Controller
 {
 
-    // public function index()
-    // {
-    //     $accounts = ChartOfAccount::where('user_id', session('user_id'))
-    //         ->orderBy('code')
-    //         ->get();
-    // }
     public function index(Request $request)
     {
-        // 1. Start the query for the ChartOfAccount model
-        $query = ChartOfAccount::query();
-        $user = $request->user();
+        $userId = $request->user()->id;
+        $search = $request->get('search');
+        $limit = (int) $request->get('limit', 10);
+        $page = (int) $request->get('page', 1);
 
+        $query = DB::table('accounts')
+            ->where('user_id', $userId);
 
-        // 2. CRITICAL: Add the condition to fetch accounts ONLY for the logged-in user
-        $query->where('user_id', $user->id);
-
-        // 3. Keep your existing search functionality (optional)
-        if ($request->has('search')) {
-            $searchTerm = $request->input('search');
-            // It's good practice to search in both name and code
-            $query->where(function ($q) use ($searchTerm) {
-                $q->where('name', 'LIKE', '%' . $searchTerm . '%')
-                    ->orWhere('code', 'LIKE', '%' . $searchTerm . '%');
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('code', 'like', "%{$search}%");
             });
         }
+        $entries = $query->orderBy('code')->paginate($limit, ['*'], 'page', $page);
+        $rows = $entries->getCollection()->map(function ($entry) {
+            return [
+                'id'                  => $entry->id,
+                'user_id'                  => $entry->user_id,
+                'code'                  => $entry->code,
+                'name'                  => $entry->name,
+                'type'                  => $entry->type,
+                'type_label'                  => $entry->type_account,
+                'nature'                  => $entry->nature,
+                'nature_label'                  => $entry->nature_label,
+            ];
+        });
 
-        // 4. Get ALL results using get() instead of paginate() and order them
-        $accounts = $query->get();
-
-        // 5. Return the data in the format your frontend expects
-        return [
-            'data' => ChartOfAccountResource::collection($accounts)->resolve(),
-            'user' => $user->id,
-            // Use count() on the resulting collection to get the total
-            'total' => $accounts->count()
-        ];
+        // --- PASO 5: Devolver el JSON (sin cambios) ---
+        return response()->json([
+            'total'  => $entries->total(),
+            'data'   => $rows,
+        ]);
     }
 
     public function store(Request $request)

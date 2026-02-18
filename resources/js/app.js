@@ -9,6 +9,7 @@ import { Grid, html } from "gridjs";
 import "gridjs/dist/theme/mermaid.css";
 import 'bootstrap-table';
 import 'bootstrap-table/dist/extensions/filter-control/bootstrap-table-filter-control.min.js';
+import 'bootstrap-table/dist/extensions/custom-view/bootstrap-table-custom-view.min.js';
 
 
 window.Choices = Choices;
@@ -156,3 +157,43 @@ window.addEventListener('DOMContentLoaded', event => {
         });
     }
 });
+
+function getEntryIcon(type) {
+    switch (type) {
+
+        /* ===== ENTRY TYPES ===== */
+        case 'opening_balance':
+            return '<i class="fa-solid fa-circle-play text-primary"></i>'
+
+        case 'opening_balance_credit':
+            return '<i class="fa-solid fa-circle-play text-danger"></i>'
+
+        case 'transfer':
+            return '<i class="fa-solid fa-right-left text-warning"></i>'
+
+        case 'asset_acquisition':
+            return '<i class="fa-solid fa-building text-info"></i>'
+
+        /* ===== ACCOUNT TYPES ===== */
+        case 'asset':
+            return '<i class="fa-solid fa-box-archive text-primary"></i>'
+
+        case 'liability':
+            return '<i class="fa-solid fa-scale-balanced text-danger"></i>'
+
+        case 'equity':
+            return '<i class="fa-solid fa-chart-pie text-success"></i>'
+
+        case 'income':
+            return '<i class="fa-solid fa-arrow-trend-up text-success"></i>'
+
+        case 'expense':
+            return '<i class="fa-solid fa-arrow-trend-down text-danger"></i>'
+
+        default:
+            return '<i class="fa-solid fa-file-lines text-muted"></i>'
+    }
+}
+
+
+window.getEntryIcon=getEntryIcon;

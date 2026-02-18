@@ -131,6 +131,7 @@ class TrialBalanceController extends Controller
             $totalSaldo   += (float) $total;
 
             return [
+                'entry_type' => $entry->type,
                 'entry_type_label' => $entry->type_account,
                 'account_code'     => $entry->account_code,
                 'nature'           => $entry->nature_label,

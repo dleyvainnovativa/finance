@@ -12,7 +12,7 @@ Route::get('/',)->name('api');
 
 
 Route::middleware('firebase.jwt')->group(function () {
-    Route::get('/accounts', [AccountController::class, 'index'])->name('accounts.index');
+    Route::get('/accounts', [AccountController::class, 'index'])->name('api.accounts');
     Route::get('/journal', [JournalEntryController::class, 'index'])->name('api.journal');
     Route::get('/voucher', [JournalEntryController::class, 'voucher'])->name('api.voucher');
     Route::get('/journal/filters', [JournalEntryController::class, 'filters'])->name('api.journal.filters');

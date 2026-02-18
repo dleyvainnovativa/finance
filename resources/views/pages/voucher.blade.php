@@ -44,6 +44,9 @@
                 data-show-refresh="true"
                 data-show-footer="true"
                 data-response-handler="responseHandler"
+                data-show-custom-view="true"
+                data-custom-view="customViewFormatter"
+                data-show-custom-view-button="true"
                 data-ajax="ajaxRequest">
                 <thead>
                     <tr>
@@ -63,6 +66,38 @@
         </div>
     </div>
 </div>
+
+<template id="tableTemplate" class="">
+    <div class="col-12 col-md-12 col-lg-6 col-xl-4">
+        <div class="text-bg-white border border-dark card card-dark h-100 position-relative">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between">
+
+                    <!-- Leading icon -->
+                    <div class="me-3 text-primary fs-4">
+                        %icon%
+                    </div>
+
+                    <!-- Title + subtitle -->
+                    <div class="flex-grow-1">
+                        <div class="fw-semibold">%title%</div>
+                        <div class="text-muted small">%subtitle%</div>
+                    </div>
+
+                    <!-- Trailing amount -->
+                    <div class="ms-3 fw-semibold">
+                        <div class="col-12 text-success">
+                            %debit%
+                        </div>
+                        <div class="col-12 text-danger">
+                            %credit%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
 @include("offcanvas.journal_filters")
 @vite(["resources/js/voucher.js"])
 

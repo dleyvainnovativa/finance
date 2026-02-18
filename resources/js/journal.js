@@ -21,21 +21,6 @@ function ajaxRequest(params) {
         'filters',
         JSON.stringify(filters)
     );
-    
-// if (selectedDebitAccounts.length) {
-//     url.searchParams.set(
-//         'debit_accounts',
-//         JSON.stringify(selectedDebitAccounts)
-//     );
-// }
-
-// if (selectedCreditAccounts.length) {
-//     url.searchParams.set(
-//         'credit_accounts',
-//         JSON.stringify(selectedCreditAccounts)
-//     );
-// }
-
 
     fetch(url, {
         headers: {
@@ -163,3 +148,38 @@ document.getElementById('filters-apply').onclick = () => {
         document.getElementById('offcanvasFilter')
     ).hide();
 };
+
+window.customViewFormatter = data => {
+        const template = $('#tableTemplate').html()
+        let view = ''
+
+        $.each(data, function (i, row) {
+ // Resolve account (debit or credit)
+        const accountName = row.debit_account_name ?? row.credit_account_name ?? '—'
+        const accountCode = row.debit_account_code ?? row.credit_account_code ?? '—'
+
+        // Determine amount + color
+        let amount = '0.00'
+        let amountClass = 'text-muted'
+
+        if (parseFloat(row.debit) > 0) {
+            amount = parseFloat(row.debit).toFixed(2)
+            amountClass = 'text-success'
+        } else if (parseFloat(row.credit) > 0) {
+            amount = parseFloat(row.credit).toFixed(2)
+            amountClass = 'text-danger'
+        }
+
+        let icon = getEntryIcon(row.entry_type_label);
+
+        view += template
+            .replace('%icon%', icon)
+            .replace('%title%', row.description)
+            .replace('%subtitle%', `${accountName} (${accountCode})`)
+            .replace('%amount%', amount)
+            .replace('%amount_class%', amountClass)
+
+        })
+
+        return `<div class="row g-4">${view}</div>`
+    }
