@@ -8,7 +8,7 @@
     </div>
 
 </div>
-<div class="row g-1 mt-1">
+<div class="row g-2 mt-1">
     <div class="col-auto">
         <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilter" aria-controls="offcanvasFilter">Filtros</button>
 
@@ -29,40 +29,44 @@
     </div>
 
     <div class="col-12">
-        <div class="table-responsive">
-            <table id="journal-table"
-                class="table text-bg-dark card-dark border-dark"
-                data-url="{{ route('api.journal') }}"
-                data-pagination="true"
-                data-side-pagination="server"
-                data-page-size="10"
-                data-search="true"
-                data-search-align="left"
-                data-buttons-align="left"
-                data-filter-control="true"
-                data-filter-show-clear="true"
-                data-show-refresh="true"
-                data-show-footer="true"
-                data-response-handler="responseHandler"
-                data-show-custom-view="true"
-                data-custom-view="customViewFormatter"
-                data-show-custom-view-button="true"
-                data-ajax="ajaxRequest">
-                <thead>
-                    <tr>
-                        <th class="" data-field="entry_date" data-footer-formatter="footerNullText" data-sortable="true">Fecha</th>
-                        <th class="" data-field="entry_type_label" data-footer-formatter="footerNullText" data-sortable="true">Tipo</th>
-                        <th class="" data-field="debit_account_name" data-footer-formatter="footerNullText" data-sortable="true">Cta Cargo</th>
-                        <th class="" data-field="debit_account_code" data-footer-formatter="footerNullText" data-sortable="true">ID Contable</th>
-                        <th class="" data-field="credit_account_name" data-footer-formatter="footerNullText" data-sortable="true">Cta Abono</th>
-                        <th class="" data-field="credit_account_code" data-footer-formatter="footerNullText" data-sortable="true">ID Contable</th>
-                        <th class="" data-field="description" data-footer-formatter="footerLabel" data-falign="left">Concepto</th>
-                        <th class="" data-field="debit" data-footer-formatter="footerSum" data-falign="left" data-sortable="true">Cargos</th>
-                        <th class="" data-field="credit" data-footer-formatter="footerSum" data-falign="left" data-sortable="true">Abonos</th>
-                    </tr>
-                </thead>
-            </table>
+        <div class="card card-dark">
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table id="journal-table"
+                        class="table text-bg-dark card-dark border-dark"
+                        data-url="{{ route('api.journal') }}"
+                        data-pagination="true"
+                        data-side-pagination="server"
+                        data-page-size="10"
+                        data-search="true"
+                        data-search-align="left"
+                        data-buttons-align="left"
+                        data-filter-control="true"
+                        data-filter-show-clear="true"
+                        data-show-refresh="true"
+                        data-show-footer="true"
+                        data-response-handler="responseHandler"
+                        data-show-custom-view="true"
+                        data-custom-view="customViewFormatter"
+                        data-show-custom-view-button="true"
+                        data-ajax="ajaxRequest">
+                        <thead>
+                            <tr>
+                                <th class="" data-field="entry_date" data-footer-formatter="footerNullText" data-sortable="true">Fecha</th>
+                                <th class="" data-field="entry_type_label" data-footer-formatter="footerNullText" data-sortable="true">Tipo</th>
+                                <th class="" data-field="debit_account_name" data-footer-formatter="footerNullText" data-sortable="true">Cta Cargo</th>
+                                <th class="" data-field="debit_account_code" data-footer-formatter="footerNullText" data-sortable="true">ID Contable</th>
+                                <th class="" data-field="credit_account_name" data-footer-formatter="footerNullText" data-sortable="true">Cta Abono</th>
+                                <th class="" data-field="credit_account_code" data-footer-formatter="footerNullText" data-sortable="true">ID Contable</th>
+                                <th class="" data-field="description" data-footer-formatter="footerLabel" data-falign="left">Concepto</th>
+                                <th class="" data-field="debit" data-footer-formatter="footerSum" data-falign="left" data-sortable="true">Cargos</th>
+                                <th class="" data-field="credit" data-footer-formatter="footerSum" data-falign="left" data-sortable="true">Abonos</th>
+                            </tr>
+                        </thead>
+                    </table>
 
+                </div>
+            </div>
         </div>
     </div>
 </div>

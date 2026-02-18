@@ -32,7 +32,19 @@ Route::middleware('firebase.auth')->group(function () {
     Route::get('/voucher', function () {
         return view('pages.voucher');
     })->name("voucher");
-    Route::get('/trial_balance', function () {
+    Route::get('/trial-balance', function () {
         return view('pages.trial_balance');
     })->name("trial_balance");
+    Route::get('/income-statement', function () {
+        return view('pages.income_statement');
+    })->name("income_statement");
+    Route::get('/cash-flow', function () {
+        return view('pages.cash_flow');
+    })->name("cash_flow");
+    Route::get('/balance-sheet', function () {
+        return view('pages.balance_sheet');
+    })->name("balance_sheet");
+    Route::get('/projections', function () {
+        return view('pages.projections');
+    })->name("projections");
 });

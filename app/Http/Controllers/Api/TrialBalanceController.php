@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB; // <-- ¡Importante!
+use Illuminate\Support\Facades\DB;
 
 use App\Models\ChartOfAccount;
 use App\Models\JournalEntryLine;
@@ -20,7 +20,7 @@ class TrialBalanceController extends Controller
         $month = $request->get('month', now()->month);
         $year = $request->get('year', now()->year);
         $search = $request->get('search');
-        $limit = (int) $request->get('limit', 15);
+        $limit = (int) $request->get('limit', 10);
 
         // --- Subconsulta para 'debit' CTE ---
         $debitQuery = DB::table('journal_voucher')

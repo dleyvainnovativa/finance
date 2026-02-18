@@ -29,40 +29,44 @@
     </div>
 
     <div class="col-12">
-        <div class="table-responsive">
-            <table id="journal-table"
-                class="table text-bg-dark card-dark border-dark"
-                data-url="{{ route('api.trial-balance') }}"
-                data-pagination="true"
-                data-side-pagination="server"
-                data-page-size="10"
-                data-search="true"
-                data-search-align="left"
-                data-buttons-align="left"
-                data-filter-control="true"
-                data-filter-show-clear="true"
-                data-show-refresh="true"
-                data-show-footer="true"
-                data-response-handler="responseHandler"
-                data-show-custom-view="true"
-                data-custom-view="customViewFormatter"
-                data-show-custom-view-button="true"
-                data-ajax="ajaxRequest">
-                <thead>
-                    <tr>
-                        <th data-field="entry_type_label" data-footer-formatter="footerNullText" data-sortable="true">Tipo</th>
-                        <th data-visible="false" data-field="entry_type" data-footer-formatter="footerNullText" data-sortable="true">Tipo</th>
-                        <th data-field="nature" data-footer-formatter="footerNullText" data-sortable="true">Naturaleza</th>
-                        <th data-field="account_name" data-footer-formatter="footerNullText" data-sortable="true">Cta Cargo</th>
-                        <th data-field="account_code" data-footer-formatter="footerNullText" data-sortable="true">ID Contable</th>
-                        <th data-field="opening" data-footer-formatter="footerSum" data-falign="left" data-sortable="true">Saldo Inicial</th>
-                        <th data-field="debit" data-footer-formatter="footerSum" data-falign="left" data-sortable="true">Cargos</th>
-                        <th data-field="credit" data-footer-formatter="footerSum" data-falign="left" data-sortable="true">Abonos</th>
-                        <th data-field="total" data-footer-formatter="footerSum" data-falign="left" data-sortable="true">Saldo</th>
-                    </tr>
-                </thead>
-            </table>
+        <div class="card card-dark">
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table id="journal-table"
+                        class="table text-bg-dark card-dark border-dark"
+                        data-url="{{ route('api.trial-balance') }}"
+                        data-pagination="true"
+                        data-side-pagination="server"
+                        data-page-size="10"
+                        data-search="true"
+                        data-search-align="left"
+                        data-buttons-align="left"
+                        data-filter-control="true"
+                        data-filter-show-clear="true"
+                        data-show-refresh="true"
+                        data-show-footer="true"
+                        data-response-handler="responseHandler"
+                        data-show-custom-view="true"
+                        data-custom-view="customViewFormatter"
+                        data-show-custom-view-button="true"
+                        data-ajax="ajaxRequest">
+                        <thead>
+                            <tr>
+                                <th data-field="entry_type_label" data-footer-formatter="footerNullText" data-sortable="true">Tipo</th>
+                                <th data-visible="false" data-field="entry_type" data-footer-formatter="footerNullText" data-sortable="true">Tipo</th>
+                                <th data-field="nature" data-footer-formatter="footerNullText" data-sortable="true">Naturaleza</th>
+                                <th data-field="account_name" data-footer-formatter="footerNullText" data-sortable="true">Cta Cargo</th>
+                                <th data-field="account_code" data-footer-formatter="footerNullText" data-sortable="true">ID Contable</th>
+                                <th data-field="opening" data-footer-formatter="footerSum" data-falign="left" data-sortable="true">Saldo Inicial</th>
+                                <th data-field="debit" data-footer-formatter="footerSum" data-falign="left" data-sortable="true">Cargos</th>
+                                <th data-field="credit" data-footer-formatter="footerSum" data-falign="left" data-sortable="true">Abonos</th>
+                                <th data-field="total" data-footer-formatter="footerSum" data-falign="left" data-sortable="true">Saldo</th>
+                            </tr>
+                        </thead>
+                    </table>
 
+                </div>
+            </div>
         </div>
     </div>
 </div>

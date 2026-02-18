@@ -45,14 +45,14 @@
                     Pólizas Contables
                 </small>
             </a>
-            <a href="{{ route('home') }}/trial_balance" class="list-group-item list-group-item-action">
+            <a href="{{ route('home') }}/trial-balance" class="list-group-item list-group-item-action">
                 <small class="text-dark">
                     <i class="fa-solid fa-scale-balanced text-primary start-icon"></i>
                     Balance de Comprobación
                 </small>
             </a>
 
-            <a href="{{ route('home') }}" class="list-group-item list-group-item-action">
+            <a href="{{ route('home') }}/income-statement" class="list-group-item list-group-item-action">
                 <small class="text-dark">
                     <i class="fa-solid fa-file-lines text-primary start-icon"></i>
                     Estado de Resultados

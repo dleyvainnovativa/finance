@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg main-navbar px-3 sticky-top bg-dark  border-bottom border-dark card-dark ">
+<nav class="navbar navbar-expand-lg main-navbar px-4 sticky-top bg-dark  border-bottom border-dark card-dark ">
     <button class="btn btn-dark card-dark border-0" id="sidebarToggle"><i class="fas fa-bars text-dark"></i></button>
 
     <div class="ms-auto d-flex align-items-center gap-3">
@@ -12,13 +12,13 @@
         </a>
         <div class="dropdown profile">
             <a class="d-flex dropdown-toggle " data-bs-toggle="dropdown">
-                <div class="btn btn-muted rounded-pill">
+                <div class="btn btn-outline-primary">
                     <i class="fa-regular fa-user"></i>
                 </div>
             </a>
-            <ul class="dropdown-menu dropdown-menu-end mt-3 bg-secondary border border-dark">
-                <li><a class="dropdown-item text-dark" href="#">Profile</a></li>
-                <li><a class="dropdown-item text-dark" href="#">Logout</a></li>
+            <ul class="dropdown-menu dropdown-menu-end mt-3 card-dark border border-dark">
+                <li><a class="dropdown-item" href="#">Perfil</a></li>
+                <li><a class="dropdown-item" href="{{route('logout')}}">Cerrar Sesión</a></li>
             </ul>
         </div>
     </div>
