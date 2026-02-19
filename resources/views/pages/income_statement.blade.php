@@ -15,6 +15,15 @@
             <option value="2">Febrero</option>
             <option value="3">Marzo</option>
             <option value="4">Abril</option>
+            <option value="5">Mayo</option>
+            <option value="6">Junio</option>
+            <option value="7">Julio</option>
+            <option value="8">Agosto</option>
+            <option value="9">Septiembre</option>
+            <option value="10">Octubre</option>
+            <option value="11">Noviembre</option>
+            <option value="12">Diciembre</option>
+
         </select>
     </div>
     <div class="col-auto text-start">
@@ -23,13 +32,42 @@
             <option value="2025">2025</option>
         </select>
     </div>
-    <div class="col-12">
+    <div class="col-12 text-dark">
         <div class="row g-4" id="cards-header"></div>
     </div>
-    <div class="col-12">
+    <div class="col-12 text-dark">
         <div class="row g-4" id="cards-container"></div>
     </div>
 </div>
+<template id="tableTemplate" class="table_template">
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span class="text-muted">(%code%) <span class="text-dark">%title%</span></span>
+        <div class="text-end">
+            <span class="badge text-bg-primary">%amount%</span>
+            <span class="badge text-bg-secondary">%percent%%</span>
+        </div>
+    </li>
+    <!-- <div class="col-12 col-md-12 col-lg-6 col-xl-4">
+        <div class="text-bg-white border border-dark card card-dark h-100 position-relative">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="flex-grow-1">
+                        <div class="fw-semibold text-dark">%title%</div>
+                        <div class="text-muted small">%code%</div>
+                    </div>
+                    <div class="ms-3 fw-semibold">
+                        <div class="col-12 text-dark text-end">
+                            %amount%
+                        </div>
+                        <div class="col-12 text-muted text-end">
+                            %percent%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+</template>
 @vite(["resources/js/income_statement.js"])
 
 @endsection

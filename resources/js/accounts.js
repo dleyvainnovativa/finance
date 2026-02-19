@@ -57,6 +57,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const $table = $('#journal-table');
     if ($table.length) {
         $table.bootstrapTable(tableOptions);
+        if (isMobile()) {
+        $table.bootstrapTable('toggleCustomView', true);
+    }
     }
 });
 

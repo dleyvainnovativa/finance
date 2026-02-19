@@ -194,6 +194,9 @@ function getEntryIcon(type) {
             return '<i class="fa-solid fa-file-lines text-muted"></i>'
     }
 }
-
+function isMobile() {
+    return window.matchMedia('(max-width: 768px)').matches;
+}
+window.isMobile=isMobile;
 
 window.getEntryIcon=getEntryIcon;

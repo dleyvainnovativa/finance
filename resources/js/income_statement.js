@@ -70,11 +70,12 @@ function buildCards(data) {
         if (group.display === 'operation') {
             html += `
                 <div class="${colClass} ">
-                    <div class="card card-dark shadow-sm h-100">
+                    <div class="card card-dark shadow-sm h-100 text-dark">
                         <div class="card-body p-4">
                         
                             
-                        <div class="mb-3 fs-5 fw-bold"><i class="me-3 text-primary fs-4 fa-solid ${group.icon}" aria-hidden="true"></i>${group.title}</div>
+                        <div class="mb-3 fs-5 fw-bold"><i class="me-3 text-primary fs-4 fa-solid ${group.icon}" aria-hidden="true">
+                        </i>${group.title}</div>
             `;
 
             if (group.data.length > 0) {
@@ -83,14 +84,18 @@ function buildCards(data) {
                         <table class="table table-bordered table-sm js-bootstrap-table" 
                         data-toggle="table"
                         data-search="true"
+                        data-buttons-align="left"
                         data-search-align="left"
+    data-show-custom-view="true"
+    data-custom-view="customViewFormatter"
+    data-show-custom-view-button="true"
                         >
                             <thead class="">
                                 <tr class="">
-                                    <th class="">Code</th>
-                                    <th class="">Account</th>
-                                    <th class="text-end">Monto</th>
-                                    <th class="text-end">%</th>
+                                    <th data-field="account_code" class="">Code</th>
+                                    <th data-field="account_name" class="">Account</th>
+                                    <th data-field="amount" class="text-end">Monto</th>
+                                    <th data-field="percent" class="text-end">%</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -133,7 +138,7 @@ function buildCards(data) {
             html += `
 
         <div class="${colClass}">
-        <div class="text-bg-white border border-dark card card-dark h-100 position-relative">
+        <div class="text-bg-white border border-dark card card-dark h-100 position-relative text-dark">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
 
@@ -149,10 +154,10 @@ function buildCards(data) {
 
                     <!-- Trailing amount -->
                     <div class="ms-3 fw-semibold">
-                        <div class="col-12 text-dark fs-5">
+                        <div class="col-12 text-dark text-end fs-5">
                             ${group.total}
                         </div>
-                        <div class="col-12 text-muted fs-5">
+                        <div class="col-12 text-muted text-end fs-5">
                             ${group.percent}%
                         </div>
                     </div>
@@ -171,8 +176,14 @@ function buildCards(data) {
     });
     document.getElementById('cards-container').innerHTML = html;
     document.querySelectorAll('.js-bootstrap-table').forEach(table => {
-        $(table).bootstrapTable();
-    });
+    const $table = $(table);
+
+    $table.bootstrapTable(tableOptions);
+
+    if (isMobile()) {
+        $table.bootstrapTable('toggleCustomView', true);
+    }
+});
 }
 
 function formatMoney(value) {
@@ -185,3 +196,23 @@ document.addEventListener('DOMContentLoaded', function () {
         initRequest();
     });
 });
+
+function customViewFormatter(data) {
+    const template = document.getElementById('tableTemplate').innerHTML;
+    let html = '<div class="list-group">';
+
+    data.forEach(row => {
+        console.log(row);
+        let card = template
+            .replace('%title%', row.account_name)
+            .replace('%code%', row.account_code)
+            .replace('%amount%', row.amount > 0 ? formatMoney(row.amount) : "0.00")
+            .replace('%percent%', row.percent > 0 ? formatMoney(row.percent) : "0.00");
+
+        html += card;
+    });
+
+    html += '</div>';
+    return html;
+}
+window.customViewFormatter=customViewFormatter

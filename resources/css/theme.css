@@ -793,11 +793,12 @@ button.gridjs-sort-neutral{
     background-color: var(--card-color);
 }
 .fixed-table-container {
-    /* border: 1px solid var(--muted-bg-color); */
+    border: 1px solid var(--muted-bg-color);
     border-radius: .5rem;
     overflow-x:initial;
 }
-.fixed-table-container:has(.fixed-table-custom-view:not([style*="display: none"])) {
+.fixed-table-container:has(.fixed-table-custom-view:not([style*="display: none"])),
+.fixed-table-container:has(.js-bootstrap-table){
     border: none;
 }
 
