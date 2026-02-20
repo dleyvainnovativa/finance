@@ -5,11 +5,11 @@
             <i class="fas fa-xmark fa-lg text-dark"></i>
         </button>
     </div>
-    <div class="offcanvas-body">
+    <div class="offcanvas-body text-dark">
 
         <!-- Cta Cargo -->
         <div class="mb-4">
-            <h6 class="text-uppercase text-secondary">Cuenta Cargo</h6>
+            <h6 class="text-uppercase text-muted">Cuenta Cargo</h6>
             <div class="d-flex gap-2 mb-2">
                 <a class="" id="debit-select-all">Seleccionar Todo</a>
                 <a class="" id="debit-clear">Limpiar</a>
@@ -22,7 +22,7 @@
 
         <!-- Cta Abono -->
         <div class="mb-4">
-            <h6 class="text-uppercase text-secondary">Cuenta Abono</h6>
+            <h6 class="text-uppercase text-muted">Cuenta Abono</h6>
             <div class="d-flex gap-2 mb-2">
                 <a class="" id="credit-select-all">Seleccionar Todo</a>
                 <a class="" id="credit-clear">Limpiar</a>
@@ -33,7 +33,7 @@
 
     </div>
 
-    <div class="offcanvas-footer p-3 border-top border-secondary">
+    <div class="offcanvas-footer p-3 border-top border-dark">
         <div class="d-flex gap-2">
             <button class="btn btn-outline-secondary w-50" id="filters-reset">
                 Limpiar todo

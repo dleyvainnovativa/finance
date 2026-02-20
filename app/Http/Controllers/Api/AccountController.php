@@ -49,6 +49,33 @@ class AccountController extends Controller
             'data'   => $rows,
         ]);
     }
+    public function all(Request $request)
+    {
+        $userId = $request->user()->id;
+
+        $query = DB::table('accounts')
+            ->where('user_id', $userId);
+
+        $entries = $query->orderBy('code')->get();
+        $rows = $entries->map(function ($entry) {
+            return [
+                'id'                  => $entry->id,
+                'user_id'                  => $entry->user_id,
+                'code'                  => $entry->code,
+                'name'                  => $entry->name,
+                'type'                  => $entry->type,
+                'type_label'                  => $entry->type_account,
+                'nature'                  => $entry->nature,
+                'nature_label'                  => $entry->nature_label,
+            ];
+        });
+
+        // --- PASO 5: Devolver el JSON (sin cambios) ---
+        return response()->json([
+            // 'total'  => $entries->total(),
+            'data'   => $rows,
+        ]);
+    }
 
     public function store(Request $request)
     {

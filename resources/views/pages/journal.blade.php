@@ -80,7 +80,7 @@
 <template id="tableTemplate" class="">
     <div class="col-12 col-md-12 col-lg-6 col-xl-4">
         <div class="text-bg-white border border-dark card card-dark h-100 position-relative">
-            <div class="card-body p-4">
+            <div class="card-body p-4 text-dark">
                 <div class="d-flex align-items-center justify-content-between">
 
                     <!-- Leading icon -->

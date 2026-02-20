@@ -30,7 +30,7 @@ function initRequest() {
     if (!token) {
         return;
     }
-    fetch(`${api_url}accounts`, {
+    fetch(`${api_url}accounts/all`, {
             headers: {
                 'Accept': 'application/json',
                 'Authorization': `Bearer ${token}`

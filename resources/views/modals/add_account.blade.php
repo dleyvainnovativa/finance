@@ -19,14 +19,14 @@
                         <label for="parent_id" class="form-label">Cuenta Padre
                             <span class="badge text-bg-primary" id="badge_root"></span>
                         </label>
-                        <select id="parent_id" name="parent_id" class="form-select" required>
+                        <select id="parent_id" name="parent_id" class="form-select card-dark border border-dark" required>
 
                         </select>
                     </div>
                     <div class="col-12">
                         <label>Code</label>
                         <div class="input-group">
-                            <span class="input-group-text" id="code_prefix">0.</span>
+                            <span class="input-group-text card-dark text-dark border border-dark" id="code_prefix">0.</span>
                             <input type="text" id="code" name="code" disabled class="form-control card-dark text-dark border border-dark" required>
                         </div>
                     </div>

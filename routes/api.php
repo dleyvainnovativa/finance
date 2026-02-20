@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AccountController;
+use App\Http\Controllers\Api\CashFlowController;
 use App\Http\Controllers\Api\EntryController;
 use App\Http\Controllers\Api\IncomeStatementController;
 use App\Http\Controllers\Api\JournalEntryController;
@@ -14,11 +15,13 @@ Route::get('/',)->name('api');
 
 Route::middleware('firebase.jwt')->group(function () {
     Route::get('/accounts', [AccountController::class, 'index'])->name('api.accounts');
+    Route::get('/accounts/all', [AccountController::class, 'all'])->name('api.accounts.all');
     Route::get('/journal', [JournalEntryController::class, 'index'])->name('api.journal');
     Route::get('/voucher', [JournalEntryController::class, 'voucher'])->name('api.voucher');
     Route::get('/journal/filters', [JournalEntryController::class, 'filters'])->name('api.journal.filters');
     Route::get('/trial_balance', [TrialBalanceController::class, 'index'])->name('api.trial-balance');
     Route::get('/income_statement', [IncomeStatementController::class, 'index'])->name('api.income-statement');
+    Route::get('/cash_flow', [CashFlowController::class, 'index'])->name('api.cash-flow');
     Route::post('/accounts', [AccountController::class, 'store'])->name('accounts.add');
     Route::post('/entries', [JournalEntryController::class, 'store'])->name('entries.add');
     Route::post('/entries/import', [JournalEntryController::class, 'import'])->name('entries.import');

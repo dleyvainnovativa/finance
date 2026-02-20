@@ -59,7 +59,7 @@
                 </small>
             </a>
 
-            <a href="{{ route('home') }}" class="list-group-item list-group-item-action">
+            <a href="{{ route('home') }}/cash-flow" class="list-group-item list-group-item-action">
                 <small class="text-dark">
                     <i class="fa-solid fa-money-bill-wave text-primary start-icon"></i>
                     Flujo de Efectivo

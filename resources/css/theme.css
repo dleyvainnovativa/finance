@@ -814,3 +814,21 @@ button.gridjs-sort-neutral{
 .table-responsive {
     overflow: hidden;
 }
+.choices__inner{
+     border-color: var(--muted-bg-color) !important;
+    outline-color:
+        color-mix(in oklab, var(--option-color) 50%, transparent) !important;
+}
+.choices__list--dropdown, .choices__list[aria-expanded]{
+       background-color: var(--card-color) !important;
+     border-color: var(--muted-bg-color) !important;
+}
+.choices__list--dropdown .choices__item--selectable.is-highlighted, .choices__list[aria-expanded] .choices__item--selectable.is-highlighted{
+     background-color: var(--card-color) !important;
+     border-color: var(--muted-bg-color) !important;
+    }
+    .choices[data-type*=select-one] .choices__input{
+        
+        background-color: var(--card-color) !important;
+        border-color: var(--muted-bg-color) !important;
+}

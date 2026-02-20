@@ -13,6 +13,7 @@ export default defineConfig({
                 'resources/js/voucher.js',
                 'resources/js/trial-balance.js',
                 'resources/js/income_statement.js',
+                'resources/js/cash_flow.js',
             ],
             refresh: true,
         }),

@@ -10,7 +10,7 @@
 <div class="row g-4 mt-1">
     <div class="col-12">
         <div class="card card-dark border border-dark">
-            <div class="card-body p-4">
+            <div class="card-body p-4 text-dark">
                 <form id="entry-form" class="needs-validation" novalidate>
 
                     <div class="row g-4">
@@ -18,13 +18,13 @@
                         <!-- Entry date -->
                         <div class="col-md-6">
                             <label class="form-label">Fecha del Movimiento</label>
-                            <input type="date" name="entry_date" class="form-control" required>
+                            <input type="date" name="entry_date" class="form-control card-dark border border-dark text-dark" required>
                         </div>
 
                         <!-- Entry type (UI helper only) -->
                         <div class="col-md-6">
                             <label class="form-label">Tipo de Movimiento</label>
-                            <select id="entry_type" class="form-select" required>
+                            <select id="entry_type" class="form-select card-dark border border-dark" required>
                                 <option value="null" disabled selected>Seleccione...</option>
                                 <option value="income">INGRESO</option>
                                 <option value="expense">EGRESO</option>
@@ -37,11 +37,11 @@
                         <!-- Amount -->
                         <div class="col-md-6">
                             <label class="form-label">Monto</label>
-                            <input type="number" name="amount" step="0.01" class="form-control" required>
+                            <input type="number" name="amount" step="0.01" class="form-control card-dark border border-dark text-dark" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Referencia</label>
-                            <input type="text" name="reference" class="form-control" required>
+                            <input type="text" name="reference" class="form-control card-dark border border-dark text-dark" required>
                         </div>
 
                         <!-- Debit -->
@@ -59,7 +59,7 @@
                         <!-- Concept -->
                         <div class="col-12">
                             <label class="form-label">Concepto</label>
-                            <textarea name="description" class="form-control" required></textarea>
+                            <textarea name="description" class="form-control card-dark border border-dark text-dark" required></textarea>
                         </div>
 
                         <div class="col-12 text-end">
