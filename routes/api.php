@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\AccountController;
+use App\Http\Controllers\Api\BalanceSheetController;
+use App\Http\Controllers\Api\BudgetController;
 use App\Http\Controllers\Api\CashFlowController;
 use App\Http\Controllers\Api\EntryController;
 use App\Http\Controllers\Api\IncomeStatementController;
@@ -22,6 +24,8 @@ Route::middleware('firebase.jwt')->group(function () {
     Route::get('/trial_balance', [TrialBalanceController::class, 'index'])->name('api.trial-balance');
     Route::get('/income_statement', [IncomeStatementController::class, 'index'])->name('api.income-statement');
     Route::get('/cash_flow', [CashFlowController::class, 'index'])->name('api.cash-flow');
+    Route::get('/budget', [BudgetController::class, 'index'])->name('api.budget');
+    Route::get('/balance_sheet', [BalanceSheetController::class, 'index'])->name('api.balance-sheet');
     Route::post('/accounts', [AccountController::class, 'store'])->name('accounts.add');
     Route::post('/entries', [JournalEntryController::class, 'store'])->name('entries.add');
     Route::post('/entries/import', [JournalEntryController::class, 'import'])->name('entries.import');

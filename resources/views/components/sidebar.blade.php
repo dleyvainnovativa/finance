@@ -66,7 +66,7 @@
                 </small>
             </a>
 
-            <a href="{{ route('home') }}" class="list-group-item list-group-item-action">
+            <a href="{{ route('home') }}/balance-sheet" class="list-group-item list-group-item-action">
                 <small class="text-dark">
                     <i class="fa-solid fa-building-columns text-primary start-icon"></i>
                     Estado de Posición
@@ -75,6 +75,12 @@
 
             <div class="sidebar-section-label text-muted fw-bold">Manual</div>
 
+            <a href="{{ route('home') }}/budget" class="list-group-item list-group-item-action">
+                <small class="text-dark">
+                    <i class="fa-solid fa-chart-pie text-primary start-icon"></i>
+                    Presupuesto
+                </small>
+            </a>
             <a href="{{ route('home') }}" class="list-group-item list-group-item-action">
                 <small class="text-dark">
                     <i class="fa-solid fa-chart-pie text-primary start-icon"></i>
