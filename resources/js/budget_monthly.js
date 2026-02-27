@@ -32,23 +32,28 @@ initRequest();
 function buildHeaderCards(data) {
     let html = '';
     data.forEach(group => {
-        let colClass = 'col-12 col-md-12 col-lg-6 col-xl-6 col-xxl-3';
+        let colClass = 'col-12 col-md-6 col-lg-6 col-xl-4 col-xxl-4';
+        let total = ``;
         if (group.display === 'operation' ) {
-            colClass = 'col-12 col-md-12 col-lg-6 col-xl-6 col-xxl-3';
+            // colClass = 'col-12 col-md-6 col-lg-6 col-xl-6 col-xxl-6';
         }else if(group.display === 'total'){
-            colClass = 'col-12 col-md-12 col-lg-6 col-xl-6 col-xxl-6';
+            colClass = 'col-12 col-md-12 col-lg-12 col-xl-4 col-xxl-4';
+            // total = `(Ingresos - Gastos)`;
         }
             html += `
 
 <div class="${colClass}">
-        <div class="card card-dark border border-dark bg-dark">
+        <div class="card card-dark border border-dark bg-dark h-100">
             <div class="card-body p-4 text-dark">
                 <div class="row g-2">
                     <div class="col-auto me-auto">
-                        <h6 class="my-0">${group.title}</h6>
+                        <h6 class="my-0 fw-bold">${group.title}</h6>
                     </div>
                     <div class="col-auto ms-auto">
                         <h6 class="my-0"><i class="fa ${group.icon} text-primary" aria-hidden="true"></i></h6>
+                    </div>
+                    <div class="col-12">
+                        <h6 class="text-muted my-0 fw-light">${group.description}</h6>
                     </div>
                     <div class="col-12">
                         <h3 id="revenue-value" class="${formatTextClass(group.total)} my-0 fw-bold">${formatCurrency(group.total)}</h3>

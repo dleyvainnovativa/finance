@@ -133,7 +133,8 @@ class BalanceSheetController extends Controller
                 foreach ($group['codes'] as $code) {
                     if ($code == "300.1") {
                         break;
-                    } else if ($code == "300.2") {
+                    } else 
+                        if ($code == "300.2") {
                         break;
                     } else {
 
@@ -187,7 +188,7 @@ class BalanceSheetController extends Controller
             foreach ($group['codes'] as $code) {
                 if ($code == "300.2") {
                     $amount = 0;
-                    for ($i = 1; $i <= $month; $i++) {
+                    for ($i = 1; $i <= 12; $i++) {
                         $amount += IncomeStatementController::getIncomeStatement($userId, $i, $year - 1)["total"];
                     }
                     $extraParentAccounts[0] = (object)[
