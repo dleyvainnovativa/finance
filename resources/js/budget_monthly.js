@@ -206,8 +206,12 @@ function customViewFormatter(data) {
         let card = template
             .replace('%title%', row.account_name)
             .replace('%code%', row.account_code)
-            .replace('%amount%', row.amount > 0 ? formatMoney(row.amount) : "0.00")
-            .replace('%percent%', row.percent > 0 ? formatMoney(row.percent) : "0.00");
+            .replace('%amount%',formatCurrency(row.amount))
+            .replace('%amount_difference%',formatCurrency(row.amount_difference))
+            .replace('%amount_budget%',formatCurrency(row.amount_budget))
+            .replace('%percent_bar%', `style="width: ${row.percent}%"`)
+            .replace('%difference_class%',formatBadgeClass(row.amount_difference))
+            .replace('%percent%', (row.percent));
 
         html += card;
     });

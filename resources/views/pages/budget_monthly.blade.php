@@ -46,33 +46,57 @@
     </div>
 </div>
 <template id="tableTemplate" class="table_template">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-        <span class="text-muted">(%code%) <span class="text-dark">%title%</span></span>
-        <div class="text-end">
-            <span class="badge text-bg-primary">%amount%</span>
-            <span class="badge text-bg-secondary">%percent%%</span>
-        </div>
-    </li>
-    <!-- <div class="col-12 col-md-12 col-lg-6 col-xl-4">
-        <div class="text-bg-white border border-dark card card-dark h-100 position-relative">
-            <div class="card-body p-4">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div class="flex-grow-1">
-                        <div class="fw-semibold text-dark">%title%</div>
-                        <div class="text-muted small">%code%</div>
-                    </div>
-                    <div class="ms-3 fw-semibold">
-                        <div class="col-12 text-dark text-end">
-                            %amount%
-                        </div>
-                        <div class="col-12 text-muted text-end">
-                            %percent%
-                        </div>
-                    </div>
+    <li class="list-group-item py-3 ">
+
+        <div class="d-flex justify-content-between align-items-start">
+
+            <!-- LEFT -->
+            <div>
+                <div class="fw-semibold fs-6">
+                    %title%
+                </div>
+                <div class="text-muted small">
+                    Código: %code%
                 </div>
             </div>
+
+            <!-- RIGHT -->
+            <div class="text-end">
+
+                <!-- Actual -->
+                <div class="fw-bold fs-5">
+                    %amount%
+                </div>
+
+                <!-- Budget -->
+                <div class="small text-muted">
+                    Presupuesto: %amount_budget%
+                </div>
+
+                <!-- Difference -->
+                <div class="small mt-1">
+                    <span class="badge %difference_class%">
+                        %amount_difference%
+                    </span>
+                </div>
+
+                <!-- Percent -->
+                <div class="small text-muted mt-1">
+                    %percent%% del total
+                </div>
+
+            </div>
+
         </div>
-    </div> -->
+
+        <!-- Optional Progress -->
+        <div class="progress mt-3" style="height:6px;">
+            <div class="progress-bar bg-success"
+                role="progressbar"
+                %percent_bar%>
+            </div>
+        </div>
+    </li>
 </template>
 @vite(["resources/js/budget_monthly.js"])
 

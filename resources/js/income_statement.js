@@ -70,7 +70,7 @@ function buildCards(data) {
         if (group.display === 'operation') {
             html += `
                 <div class="${colClass} ">
-                    <div class="card card-dark border border-dark shadow-sm h-100 text-dark">
+                    <div class="card card-dark shadow-sm h-100 text-dark">
                         <div class="card-body p-4">
                         
                             
@@ -198,12 +198,12 @@ function customViewFormatter(data) {
     let html = '<div class="list-group">';
 
     data.forEach(row => {
-        console.log(row);
+
         let card = template
             .replace('%title%', row.account_name)
             .replace('%code%', row.account_code)
-            .replace('%amount%', row.amount > 0 ? formatMoney(row.amount) : "0.00")
-            .replace('%percent%', row.percent > 0 ? formatMoney(row.percent) : "0.00");
+            .replace('%amount%', (row.amount))
+            .replace('%percent%',  (row.percent));
 
         html += card;
     });

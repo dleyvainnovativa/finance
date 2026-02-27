@@ -213,24 +213,68 @@ function formatMoney(value) {
     return (Math.round(value * 100) / 100).toFixed(2);
 }
 function formatTextClass(value) {
-    if(value == 0){
+
+    if (value === null || value === undefined) {
         return "text-muted";
-    }else if(value >= 0){
+    }
+
+    // If it's a string like "$2,000.00", clean it
+    if (typeof value === "string") {
+        value = value.replace(/[^0-9.-]+/g, '');
+    }
+
+    const number = parseFloat(value);
+
+    if (!isFinite(number) || number === 0) {
+        return "text-muted";
+    } else if (number > 0) {
         return "text-success";
-    }else{
+    } else {
         return "text-danger";
     }
 }
+function formatBadgeClass(value) {
+
+    if (value === null || value === undefined) {
+        return "text-bg-secondary";
+    }
+
+    // If it's a string like "$2,000.00", clean it
+    if (typeof value === "string") {
+        value = value.replace(/[^0-9.-]+/g, '');
+    }
+
+    const number = parseFloat(value);
+
+    if (!isFinite(number) || number === 0) {
+        return "text-bg-secondary";
+    } else if (number > 0) {
+        return "text-bg-success";
+    } else {
+        return "text-bg-danger";
+    }
+}
 function formatCurrency(value) {
-    return value.toLocaleString('es-MX', {
-        style: 'currency',
-        currency: 'MXN'
-    });
+    try {
+        const number = Number(value);
+        if (isNaN(number)) {
+            return value;
+        }
+        
+        return number.toLocaleString('es-MX', {
+            style: 'currency',
+            currency: 'MXN'
+        });
+        
+    } catch (e) {
+        return value;
+    }
 }
 
 window.formatMoney=formatMoney;
 window.formatTextClass=formatTextClass;
 window.formatCurrency=formatCurrency;
+window.formatBadgeClass=formatBadgeClass;
 window.isMobile=isMobile;
 
 window.getEntryIcon=getEntryIcon;

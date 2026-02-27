@@ -48,13 +48,42 @@
     </div>
 </div>
 <template id="tableTemplate" class="table_template">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    <li class="list-group-item py-3">
+        <div class="d-flex justify-content-between align-items-center">
+
+            <!-- Left -->
+            <div>
+                <div class="fw-semibold fs-6">
+                    %title%
+                </div>
+                <div class="text-muted small">
+                    Código: %code%
+                </div>
+            </div>
+
+            <!-- Right -->
+            <div class="text-end">
+                <div class="fw-bold fs-5">
+                    %amount%
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-1">
+                    <span class="badge bg-primary-subtle text-primary">
+                        %percent%%
+                    </span>
+                </div>
+            </div>
+
+        </div>
+    </li>
+
+    <!-- <li class="list-group-item d-flex justify-content-between align-items-center">
         <span class="text-muted">(%code%) <span class="text-dark">%title%</span></span>
         <div class="text-end">
             <span class="badge text-bg-primary">%amount%</span>
             <span class="badge text-bg-secondary">%percent%%</span>
         </div>
-    </li>
+    </li> -->
     <!-- <div class="col-12 col-md-12 col-lg-6 col-xl-4">
         <div class="text-bg-white border border-dark card card-dark h-100 position-relative">
             <div class="card-body p-4">

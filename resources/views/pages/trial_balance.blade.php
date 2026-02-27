@@ -86,42 +86,63 @@
 
 <template id="tableTemplate">
     <div class="col-12 col-md-6 col-xl-4">
-        <div class="card card-dark border border-dark shadow-sm h-100">
-            <div class="card-body p-3">
+        <div class="card card-dark border border-dark h-100">
+            <div class="card-body p-4 text-dark">
 
-                <!-- Header -->
-                <div class="d-flex align-items-center mb-2">
-                    <div class="me-2 fs-4">
-                        %icon%
-                    </div>
-                    <div>
-                        <div class="fw-semibold text-dark">%account_name%</div>
-                        <div class="text-muted small">
-                            %account_code% · %entry_type_label% · %nature%
+                <!-- HEADER -->
+                <div class="d-flex align-items-start justify-content-between mb-3">
+
+                    <div class="d-flex align-items-center">
+                        <div class="me-3 fs-4 text-primary">
+                            %icon%
+                        </div>
+                        <div>
+                            <div class="fw-semibold fs-6">
+                                %account_name%
+                            </div>
+                            <div class="text-muted small">
+                                %account_code% · %entry_type_label%
+                            </div>
                         </div>
                     </div>
+
+                    <span class="badge text-bg-light text-dark border">
+                        %nature%
+                    </span>
+
                 </div>
 
-                <hr class="my-2">
+                <!-- AMOUNTS -->
+                <div class="small">
 
-                <!-- Amounts -->
-                <div class="row small">
-                    <div class="col-6 text-muted">Saldo inicial</div>
-                    <div class="col-6 text-end text-dark">%opening%</div>
+                    <div class="d-flex justify-content-between py-1">
+                        <span class="text-muted">Saldo inicial</span>
+                        <span class="fw-bold text-dark">%opening%</span>
+                    </div>
 
-                    <div class="col-6 text-muted">Débitos</div>
-                    <div class="col-6 text-end text-success">%debit%</div>
+                    <div class="d-flex justify-content-between py-1">
+                        <span class="text-muted">Débitos</span>
+                        <span class="text-success fw-bold">%debit%</span>
+                    </div>
 
-                    <div class="col-6 text-muted">Créditos</div>
-                    <div class="col-6 text-end text-danger">%credit%</div>
+                    <div class="d-flex justify-content-between py-1">
+                        <span class="text-muted">Créditos</span>
+                        <span class="text-danger fw-bold">%credit%</span>
+                    </div>
+
                 </div>
 
-                <hr class="my-2">
+                <!-- Divider (Soft) -->
+                <div class="border-top my-3 opacity-25"></div>
 
-                <!-- Total -->
-                <div class="d-flex justify-content-between fw-semibold">
-                    <span class="text-dark">Saldo</span>
-                    <span class="%total_class%">%total%</span>
+                <!-- TOTAL -->
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-semibold text-dark">
+                        Saldo actual
+                    </span>
+                    <span class="fs-5 fw-bold %total_class%">
+                        %total%
+                    </span>
                 </div>
 
             </div>

@@ -208,9 +208,9 @@ function customViewFormatter(data) {
         let card = template
             .replace('%title%', row.account_name)
             .replace('%code%', row.account_code)
-            .replace('%amount%', row.amount > 0 ? formatMoney(row.amount) : "0.00")
+            .replace('%amount%', row.amount > 0 ? formatCurrency(row.amount) : "0.00")
             .replace('%percent%', row.percent > 0 ? formatMoney(row.percent) : "0.00")
-            .replace('%percent_group%', row.percent > 0 ? formatMoney(row.percent) : "0.00");
+            .replace('%percent_group%', row.percent_group > 0 ? formatMoney(row.percent_group) : "0.00");
 
         html += card;
     });

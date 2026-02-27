@@ -93,7 +93,7 @@ function buildCards(data) {
                             <thead class="">
                                 <tr class="">
                                     <th data-field="account_code" class="">Code</th>
-                                    <th data-field="account_name" class="">Account</th>
+                                    <th data-field="account_name" class="">Cuenta</th>
                                     <th data-field="total" class="text-end">Monto</th>
                                 </tr>
                             </thead>
@@ -105,7 +105,7 @@ function buildCards(data) {
                         <tr>
                             <td>${row.account_code}</td>
                             <td>${row.account_name}</td>
-                            <td class="text-end">${formatMoney(row.total)}</td>
+                            <td class="text-end">${formatCurrency(row.total)}</td>
                         </tr>
                     `;
                 });
@@ -196,7 +196,7 @@ function customViewFormatter(data) {
         let card = template
             .replace('%title%', row.account_name)
             .replace('%code%', row.account_code)
-            .replace('%amount%', row.total > 0 ? formatMoney(row.total) : "0.00")
+            .replace('%amount%', formatCurrency(row.total))
 
         html += card;
     });
