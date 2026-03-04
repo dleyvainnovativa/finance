@@ -1,5 +1,5 @@
 <div class="modal fade border border-dark" id="accountModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen-sm-down">
         <form id="account-form" class="modal-content border border-dark needs-validation" novalidate>
             @csrf
             <div class="modal-header  card-dark border-0 px-4 pt-4">
@@ -44,7 +44,7 @@
             </div>
 
             <div class="modal-footer card-dark border-0">
-                <button class="btn btn-outline-primary" data-bs-dismiss="modal">Cancelar</button>
+                <a class="btn btn-outline-primary" data-bs-dismiss="modal">Cancelar</a>
                 <button type="submit" class="btn btn-primary">Agregar cuenta</button>
             </div>
         </form>

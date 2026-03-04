@@ -1,3 +1,28 @@
+(() => {
+    'use strict'
+    const forms = document.querySelectorAll('#account-form.needs-validation')
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', async event => {
+            const submitButton = form.querySelector('button[type="submit"]');
+
+            setButtonLoading(submitButton, true);
+            event.preventDefault(); // always prevent native submit
+
+            if (!form.checkValidity()) {
+                event.stopPropagation();
+                await setButtonLoading(submitButton, false);
+
+            } else {
+
+                await addAccount(form);
+                await setButtonLoading(submitButton, false);
+
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+})();
+
 function ajaxRequest(params) {
     const token = localStorage.getItem('finance_auth_token');
     const url = new URL(params.url);
@@ -12,16 +37,40 @@ function ajaxRequest(params) {
         })
         .then(res => res.json())
         .then(data => {
-    let accounts_list = [];
-
-                    window.accounts_list = data.data;
-
-                    buildSelect(data);
-
             params.success(data);
         })
         .catch(() => params.error());
 }
+
+initRequest()
+
+function initRequest() {
+    const token = localStorage.getItem('finance_auth_token');
+    if (!token) {
+        return;
+    }
+    fetch(`${api_url}accounts/all`, {
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        .then(response => {
+            return response.json();
+        })
+        .then(data => {
+            let accounts_list = [];
+
+            window.accounts_list = data.data;
+
+            buildSelect(data);
+
+        })
+        .catch(error => {
+            console.error(error);
+        });
+}
+
 window.ajaxRequest = ajaxRequest;
 
 
@@ -42,7 +91,7 @@ function actionsFormatter(value, row) {
                         </button>
                     </div>`;
 }
-window.actionsFormatter=actionsFormatter
+window.actionsFormatter = actionsFormatter
 
 
 function responseHandler(res) {
@@ -58,11 +107,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if ($table.length) {
         $table.bootstrapTable(tableOptions);
         if (isMobile()) {
-        $table.bootstrapTable('toggleCustomView', true);
-    }
+            $table.bootstrapTable('toggleCustomView', true);
+        }
     }
 });
-
 
 window.accountChoices = null;
 
@@ -122,21 +170,29 @@ parentSelect.addEventListener("change", function () {
     document.getElementById("account_type").value = `${type}`;
     document.getElementById("account_parent_id").value = parent_id;
 
-    // 🔍 Find children of this parent
-    const children = accounts_list.filter(acc =>
-        acc.code?.startsWith(parentCode + ".")
-    );
+   const children = accounts_list.filter(acc => {
+    if (!acc.code) return false;
+
+    const parts = acc.code.split(".");
+    const parentParts = parentCode.split(".");
+
+    // Must start with parent
+    if (!acc.code.startsWith(parentCode + ".")) return false;
+
+    // Must be exactly one level deeper
+    return parts.length === parentParts.length + 1;
+});
     console.log(children);
 
     //  Get next consecutive
     let nextNumber = 1;
 
     if (children.length > 0) {
-        
+
         const lastNumbers = children.map(acc => {
             const parts = acc.code.split(".");
             console.log(parts);
-            return parseInt(parts[parts.length -1], 10);
+            return parseInt(parts[parts.length - 1], 10);
         });
         console.log(lastNumbers);
         nextNumber = Math.max(...lastNumbers) + 1;
@@ -146,7 +202,6 @@ parentSelect.addEventListener("change", function () {
     // ✍️ Set value
     document.getElementById("code").value = nextNumber;
     document.getElementById("account_code").value = `${parentCode}.${nextNumber}`;
-
 });
 
 async function addAccount(form) {
@@ -175,22 +230,21 @@ async function addAccount(form) {
             handleApiError(response.status, data);
             return;
         }
-
+        $('#journal-table').bootstrapTable('refresh');
+        initRequest();
         bootstrap.Modal.getInstance(
             document.getElementById('accountModal')
         ).hide();
         form.reset();
         document.getElementById("badge_root").textContent = "";
-    document.getElementById("code_prefix").textContent = "0";
-        initRequest();
-
-
+        document.getElementById("code_prefix").textContent = "0";
         const data = await response.json();
         showAlert("Perfil actualizado", "Se han actualizado correctamente los datos", "", "success")
 
         return data;
 
     } catch (error) {
+        console.log(error);
         showAlert("Ha ocurrido un error", "No se han actualizado correctamente los datos, intente de nuevo", "", "danger")
 
         return error;

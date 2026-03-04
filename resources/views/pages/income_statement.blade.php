@@ -82,7 +82,7 @@
         </div>
     </div>
     <div class="tab-pane fade" id="tab-chart">
-        <div class="card shadow-sm">
+        <div class="card card-dark shadow-sm">
             <div class="card-body p-4">
                 <canvas id="financialChart" height=""></canvas>
             </div>

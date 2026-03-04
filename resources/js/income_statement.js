@@ -202,26 +202,32 @@ function customViewFormatter(data) {
 }
 document.getElementById("refresh").addEventListener("click", initRequest);
 window.customViewFormatter=customViewFormatter
+let financialChart = null;
 
 function initChart(financialData){
 
-const labels = financialData.map(item => item.title);
-const values = financialData.map(item => item.total);
+    const labels = financialData.map(item => item.title);
+    const values = financialData.map(item => item.total);
 
-new Chart(document.getElementById('financialChart'), {
-    type: 'bar',
-    data: {
-        labels: labels,
-        datasets: [{
-            label: 'Resumen Financiero',
-            data: values
-        }]
-    },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: { display: false }
-        }
+    // Destroy previous chart if it exists
+    if (financialChart) {
+        financialChart.destroy();
     }
-});
+
+    financialChart = new Chart(document.getElementById('financialChart'), {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Resumen Financiero',
+                data: values
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
 }
