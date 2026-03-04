@@ -58,7 +58,7 @@ class AccountController extends Controller
 
         $type = $request->get('type', null);
         if ($type == "create") {
-            $entries = $query->orderBy('code')->where("allows_children", true)->get();
+            $entries = $query->orderBy('code')->get();
         } else {
             $entries = $query->orderBy('code')->get();
         }
@@ -72,6 +72,9 @@ class AccountController extends Controller
                 'type_label'                  => $entry->type_account,
                 'nature'                  => $entry->nature,
                 'nature_label'                  => $entry->nature_label,
+                'allows_children'                  => $entry->allows_children,
+                'is_editable'                  => $entry->is_editable,
+                'is_deletable'                  => $entry->is_deletable,
             ];
         });
 

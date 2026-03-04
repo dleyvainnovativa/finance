@@ -133,6 +133,7 @@ async function buildSelect(accounts) {
     window.accountChoices.setChoices(
         accounts.data.map(m => ({
             value: m.id,
+            disabled: !m.allows_children,
             label: `${m.code} - ${m.name}`,
             selected: false,
             customProperties: {
