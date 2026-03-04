@@ -27,6 +27,7 @@
             <option value="10">Octubre</option>
             <option value="11">Noviembre</option>
             <option value="12">Diciembre</option>
+            <option value="total">Cierre</option>
 
         </select>
     </div>
@@ -59,15 +60,15 @@
                 data-ajax="ajaxRequest">
                 <thead>
                     <tr>
-                        <th data-field="entry_date" data-footer-formatter="footerNullText" data-sortable="true">Fecha</th>
-                        <th data-field="entry_type_label" data-footer-formatter="footerNullText" data-sortable="true">Tipo</th>
-                        <th data-field="debit_account_name" data-footer-formatter="footerNullText" data-sortable="true">Cta Cargo</th>
-                        <th data-field="debit_account_code" data-footer-formatter="footerNullText" data-sortable="true">ID Contable</th>
-                        <th data-field="credit_account_name" data-footer-formatter="footerNullText" data-sortable="true">Cta Abono</th>
-                        <th data-field="credit_account_code" data-footer-formatter="footerNullText" data-sortable="true">ID Contable</th>
-                        <th data-field="description" data-footer-formatter="footerLabel" data-falign="left">Concepto</th>
-                        <th data-field="debit" data-footer-formatter="footerSum" data-falign="left" data-sortable="true">Cargos</th>
-                        <th data-field="credit" data-footer-formatter="footerSum" data-falign="left" data-sortable="true">Abonos</th>
+                        <th class="" data-field="entry_date" data-footer-formatter="footerNullText" data-sortable="true">Fecha</th>
+                        <th class="" data-field="entry_type_label" data-footer-formatter="footerNullText" data-sortable="true">Tipo</th>
+                        <th class="" data-field="debit_account_name" data-footer-formatter="footerNullText" data-sortable="true">Cta Cargo</th>
+                        <th class="" data-field="debit_account_code" data-footer-formatter="footerNullText" data-sortable="true">ID Contable</th>
+                        <th class="" data-field="credit_account_name" data-footer-formatter="footerNullText" data-sortable="true">Cta Abono</th>
+                        <th class="" data-field="credit_account_code" data-footer-formatter="footerNullText" data-sortable="true">ID Contable</th>
+                        <th class="" data-field="description" data-footer-formatter="footerLabel" data-falign="left">Concepto</th>
+                        <th class="" data-field="debit" data-footer-formatter="footerSum" data-falign="left" data-sortable="true">Cargos</th>
+                        <th class="" data-field="credit" data-footer-formatter="footerSum" data-falign="left" data-sortable="true">Abonos</th>
                     </tr>
                 </thead>
             </table>

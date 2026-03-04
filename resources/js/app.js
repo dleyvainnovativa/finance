@@ -5,17 +5,16 @@ import * as bootstrap from 'bootstrap';
 import './firebase/firebase-listener';
 import Choices from "choices.js";
 import "choices.js/public/assets/styles/choices.min.css";
-import { Grid, html } from "gridjs";
-import "gridjs/dist/theme/mermaid.css";
 import 'bootstrap-table';
 import 'bootstrap-table/dist/extensions/filter-control/bootstrap-table-filter-control.min.js';
 import 'bootstrap-table/dist/extensions/custom-view/bootstrap-table-custom-view.min.js';
 import 'bootstrap-table/dist/extensions/sticky-header/bootstrap-table-sticky-header.min.js';
+import Chart from 'chart.js/auto';
+import Masonry from 'masonry-layout';
 
-
+window.Masonry = Masonry;
+window.Chart = Chart;
 window.Choices = Choices;
-window.Grid = Grid;
-window.html = html;
 window.bootstrap = bootstrap;
 window.jQuery = $;
 window.$ = $;

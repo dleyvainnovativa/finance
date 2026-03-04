@@ -27,7 +27,7 @@ class BudgetController extends Controller
         );
     }
 
-    public static function getBudget($userId, $year)
+    public static function getBudget($userId, $year, $summary = false)
     {
         $month = 12;
         $fileName = "pr/{$userId}/pr_{$year}.json";

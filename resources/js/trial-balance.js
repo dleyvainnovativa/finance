@@ -41,7 +41,8 @@ function buildHeaderCards(data) {
     console.log(data);
     let html = '';
     data.forEach(group => {
-        const colClass = 'col-12 col-md-12 col-lg-4 col-xl-3'
+        const colClass = 'col-12 col-md-12 col-lg-6 col-xl-6 col-xxl-4';
+
         if (group.type === 'calculate') {
             html += `
 

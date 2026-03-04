@@ -24,6 +24,7 @@
             <option value="10">Octubre</option>
             <option value="11">Noviembre</option>
             <option value="12">Diciembre</option>
+            <option value="total">Total</option>
         </select>
     </div>
     <div class="col-auto text-start">
@@ -91,7 +92,7 @@
         </div>
 
         <!-- Optional Progress -->
-        <div class="progress mt-3" style="height:6px;">
+        <div class="progress mt-3  border border-dark" style="height:12px;">
             <div class="progress-bar bg-success"
                 role="progressbar"
                 %percent_bar%>

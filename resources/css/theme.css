@@ -885,3 +885,6 @@ button.gridjs-sort-neutral{
 .bootstrap-table .sticky-header-container table {
     width: 100% !important;
 }
+.table{
+    border-color: var(--muted-bg-color);
+}

@@ -11,10 +11,15 @@ class BudgetMonthlyController extends Controller
 {
     public function index(Request $request)
     {
-        $month = $request->get('month', now()->month);
+        $month =  $request->get('month');
         $userId = $request->user()->id;
         $year = $request->get('year', now()->year);
-        $data = self::getBudgetMonthly($userId, $month, $year);
+
+        if ($month == "total") {
+            $data = self::getBudgetMonthly($userId, 12, $year, true);
+        } else {
+            $data = self::getBudgetMonthly($userId, $month, $year);
+        }
         return response()->json(
             [
                 'data'   => $data["data"],
@@ -23,20 +28,30 @@ class BudgetMonthlyController extends Controller
         );
     }
 
-    public static function getBudgetMonthly($userId, $month, $year)
+    public static function getBudgetMonthly($userId, $month, $year, $summary = false)
     {
-        $incomes = IncomeStatementController::getIncomeStatement($userId, $month, $year);
-        $incomesData = &$incomes["data"];
+        if ($summary) {
+            $incomes = IncomeStatementController::getIncomeStatement($userId, $month, $year, true);
+        } else {
+            $incomes = IncomeStatementController::getIncomeStatement($userId, $month, $year);
+        }
         $budget = BudgetController::getBudget($userId, ($year - 1))["results"];
+        $incomesData = &$incomes["data"];
         foreach ($incomesData as $key => &$group) {
             $total_budget = 0;
             if ($group["type"] != "total") {
                 foreach ($group["data"] as $key => &$entry) {
                     foreach ($budget as $key => $budget_entry) {
                         if ($budget_entry->account_id == $entry->account_id) {
-                            $entry->amount_budget = $budget_entry->monthly;
-                            $entry->amount_difference = $budget_entry->monthly - $entry->amount;
-                            $total_budget += $budget_entry->monthly;
+                            if ($summary) {
+                                $entry->amount_budget = $budget_entry->annual;
+                                $entry->amount_difference = $budget_entry->annual - $entry->amount;
+                                $total_budget += $budget_entry->annual;
+                            } else {
+                                $entry->amount_budget = $budget_entry->monthly;
+                                $entry->amount_difference = $budget_entry->monthly - $entry->amount;
+                                $total_budget += $budget_entry->monthly;
+                            }
                         }
                     }
                 }

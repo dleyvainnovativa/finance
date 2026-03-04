@@ -27,6 +27,7 @@
             <option value="10">Octubre</option>
             <option value="11">Noviembre</option>
             <option value="12">Diciembre</option>
+            <option value="total">Cierre</option>
 
         </select>
     </div>

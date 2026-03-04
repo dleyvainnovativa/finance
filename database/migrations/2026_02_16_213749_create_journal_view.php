@@ -7,12 +7,12 @@ use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
-        DB::statement("
+  /**
+   * Run the migrations.
+   */
+  public function up(): void
+  {
+    DB::statement("
             CREATE OR REPLACE VIEW journal AS
             with main_table as (
   select 
@@ -24,9 +24,11 @@ return new class extends Migration
     `da`.`id` AS `debit_account_id`, 
     `da`.`name` AS `debit_account_name`, 
     `da`.`code` AS `debit_account_code`, 
+    `da`.`nature` AS `debit_account_nature`, 
     `ca`.`id` AS `credit_account_id`, 
     `ca`.`name` AS `credit_account_name`, 
     `ca`.`code` AS `credit_account_code`, 
+    `ca`.`nature` AS `credit_account_nature`, 
     case when `je`.`entry_type` in ('income', 'opening_balance') then coalesce(`dl`.`debit`, `cl`.`credit`, 0) else 0 end AS `debit`, 
     case when `je`.`entry_type` in (
       'expense', 'asset_acquisition', 'opening_balance_credit'
@@ -42,7 +44,7 @@ return new class extends Migration
               and `dl`.`debit` is not null
             )
           ) 
-          left join `chart_of_accounts` `da` on(
+          left join `accounts` `da` on(
             `da`.`id` = `dl`.`chart_of_account_id`
           )
         ) 
@@ -51,7 +53,7 @@ return new class extends Migration
           and `cl`.`credit` is not null
         )
       ) 
-      left join `chart_of_accounts` `ca` on(
+      left join `accounts` `ca` on(
         `ca`.`id` = `cl`.`chart_of_account_id`
       )
     ) 
@@ -67,9 +69,11 @@ return new class extends Migration
     `da`.`id` AS `debit_account_id`, 
     `da`.`name` AS `debit_account_name`, 
     `da`.`code` AS `debit_account_code`, 
+    `da`.`nature` AS `debit_account_nature`, 
     `ca`.`id` AS `credit_account_id`, 
     `ca`.`name` AS `credit_account_name`, 
     `ca`.`code` AS `credit_account_code`, 
+    `ca`.`nature` AS `credit_account_nature`, 
     case when `je`.`entry_type` in ('income', 'opening_balance') then coalesce(`dl`.`debit`, `cl`.`credit`, 0) when `je`.`entry_type` = 'transfer' 
     and `da`.`id` is not null then `dl`.`debit` else 0 end AS `debit`, 
     case when `je`.`entry_type` in (
@@ -86,7 +90,7 @@ return new class extends Migration
               and `dl`.`debit` is not null
             )
           ) 
-          left join `chart_of_accounts` `da` on(
+          left join `accounts` `da` on(
             `da`.`id` = `dl`.`chart_of_account_id`
           )
         ) 
@@ -95,7 +99,7 @@ return new class extends Migration
           and `cl`.`credit` is not null
         )
       ) 
-      left join `chart_of_accounts` `ca` on(
+      left join `accounts` `ca` on(
         `ca`.`id` = `cl`.`chart_of_account_id`
       )
     ) 
@@ -111,9 +115,11 @@ return new class extends Migration
     `ca`.`id` AS `debit_account_id`, 
     `ca`.`name` AS `debit_account_name`, 
     `ca`.`code` AS `debit_account_code`, 
+    `ca`.`nature` AS `debit_account_nature`, 
     `da`.`id` AS `credit_account_id`, 
     `da`.`name` AS `credit_account_name`, 
     `da`.`code` AS `credit_account_code`, 
+    `da`.`nature` AS `debit_account_nature`, 
     case when `je`.`entry_type` in ('income', 'opening_balance') then coalesce(`dl`.`debit`, `cl`.`credit`, 0) else 0 end AS `debit`, 
     case when `je`.`entry_type` in (
       'expense', 'asset_acquisition', 'opening_balance_credit'
@@ -130,7 +136,7 @@ return new class extends Migration
               and `dl`.`debit` is not null
             )
           ) 
-          left join `chart_of_accounts` `da` on(
+          left join `accounts` `da` on(
             `da`.`id` = `dl`.`chart_of_account_id`
           )
         ) 
@@ -139,7 +145,7 @@ return new class extends Migration
           and `cl`.`credit` is not null
         )
       ) 
-      left join `chart_of_accounts` `ca` on(
+      left join `accounts` `ca` on(
         `ca`.`id` = `cl`.`chart_of_account_id`
       )
     ) 
@@ -155,9 +161,11 @@ select
   `main_table`.`debit_account_id` AS `debit_account_id`, 
   `main_table`.`debit_account_name` AS `debit_account_name`, 
   `main_table`.`debit_account_code` AS `debit_account_code`, 
+  `main_table`.`debit_account_nature` AS `debit_account_nature`, 
   `main_table`.`credit_account_id` AS `credit_account_id`, 
   `main_table`.`credit_account_name` AS `credit_account_name`, 
   `main_table`.`credit_account_code` AS `credit_account_code`, 
+  `main_table`.`credit_account_nature` AS `credit_account_nature`, 
   `main_table`.`debit` AS `debit`, 
   `main_table`.`credit` AS `credit` 
 from 
@@ -166,10 +174,10 @@ order by
   `main_table`.`entry_date`, 
   `main_table`.`entry_id`
         ");
-    }
+  }
 
-    public function down(): void
-    {
-        DB::statement('DROP VIEW IF EXISTS journal');
-    }
+  public function down(): void
+  {
+    DB::statement('DROP VIEW IF EXISTS journal');
+  }
 };

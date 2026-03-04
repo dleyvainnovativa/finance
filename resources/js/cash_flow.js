@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function buildHeaderCards(data) {
     let html = '';
     data.forEach(group => {
-        const colClass = 'col-12 col-md-12 col-lg-6 col-xl-3'
+        const colClass = 'col-12 col-md-12 col-lg-6 col-xl-6 col-xxl-3'
             html += `
 
 <div class="${colClass}">

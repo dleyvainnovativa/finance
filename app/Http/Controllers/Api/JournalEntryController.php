@@ -23,7 +23,31 @@ class JournalEntryController extends Controller
         $filters = json_decode($request->get('filters'), true) ?? [];
         $limit = (int) $request->get('limit', 10);
         $page = (int) $request->get('page', 1);
+        if ($month == "total") {
+            $results = self::getJournalClose($userId, $year, $search, $filters, $limit, $page);
+        } else {
+            $results = self::getJournal($userId, $month, $year, $search, $filters, $limit, $page);
+        }
+        return response()->json([
+            'total'  => $results["total"],
+            'data'   => $results["data"],
+            'filters' => $results["filters"],
+            'footer' => [
+                'description' => 'TOTAL',
+                'debit'  => $results["debit"],
+                'credit' => $results["credit"],
+                'credit_account_code' => "",
+                'entry_date' => "",
+                'entry_type_label' => "",
+                'debit_account_name' => "",
+                'debit_account_code' => "",
+                'credit_account_name' => "",
+            ],
+        ]);
+    }
 
+    public static function getJournal($userId, $month, $year, $search = null, $filters = [], $limit = 10, $page = 1)
+    {
         $query = DB::table('journal')
             ->where('user_id', $userId);
 
@@ -92,23 +116,75 @@ class JournalEntryController extends Controller
             ];
         });
 
-        // --- PASO 5: Devolver el JSON (sin cambios) ---
-        return response()->json([
-            'total'  => $entries->total(),
-            'data'   => $rows,
-            'filters' => $filters,
-            'footer' => [
-                'description' => 'TOTAL',
-                'debit'  => $totalDebit,
-                'credit' => $totalCredit,
-                'credit_account_code' => "",
-                'entry_date' => "",
-                'entry_type_label' => "",
-                'debit_account_name' => "",
-                'debit_account_code' => "",
-                'credit_account_name' => "",
-            ],
-        ]);
+        $returned["total"] = $entries->total();
+        $returned["data"] = $rows;
+        $returned["filters"] = $filters;
+        $returned["debit"] = $totalDebit;
+        $returned["credit"] = $totalCredit;
+        return $returned;
+    }
+
+    public static function getJournalClose($userId, $year, $search = null, $filters = [], $limit = 10, $page = 1)
+    {
+        $rows = TrialBalanceController::getTrialBalanceSummary($userId, 12, $year);
+        $prefixes = ['400.', '500.', '600.', '700.', '800.', '900.'];
+
+        $data = $rows->where(function ($q) use ($prefixes) {
+            foreach ($prefixes as $prefix) {
+                $q->orWhere('op.account_code', 'like', $prefix . '%');
+            }
+        });
+
+        $entries = [];
+        $totalDebit = 0;
+        $totalCredit = 0;
+
+        foreach ($data->get() as $key => $entry) {
+            $totalDebit += $entry->credit;
+            $totalCredit +=  $entry->debit;
+        }
+        $results = $data->paginate($limit);
+        $entries = $results->getCollection()->map(function ($entry) use ($year) {
+            if ($entry->nature == "debit") {
+                $type = "Egreso";
+            } else {
+                $type = "Ingreso";
+            }
+            return [
+                'id'                   => null,
+                'entry_date'           => "01/12/$year",
+                'entry_type_label'     => $type,
+                'description'          => "POLIZA CIERRE",
+                'debit_account_name'   => $entry->account_name,
+                'debit_account_code'   => $entry->account_code,
+                'credit_account_name'  => "REMANENTE O DEFICIT EJERCICIO $year",
+                'credit_account_code'  => "300.1",
+                'debit'                => round($entry->credit, 2),
+                'credit'               => round($entry->debit, 2),
+            ];
+        });
+        // dd($entries->get());
+        $returned["total"] = $results->total();
+        $returned["data"] = $entries;
+        $returned["filters"] = [];
+        $returned["debit"] = $totalDebit;
+        $returned["credit"] = $totalCredit;
+        return $returned;
+    }
+
+    public static function getTypeName($type)
+    {
+        $name = "";
+        switch ($type) {
+            case 'value':
+                # code...
+                break;
+
+            default:
+                # code...
+                break;
+        }
+        return $name;
     }
 
     public function filters(Request $request)
@@ -176,8 +252,13 @@ class JournalEntryController extends Controller
         $month = self::getMonth($entry_date);
         $year = self::getYear($entry_date);
 
-        // self::create($userId, $entry_date, $entry_type, $description, $reference, $amount, $debit_account_id, $credit_account_id);
+
+        self::create($userId, $entry_date, $entry_type, $description, $reference, $amount, $debit_account_id, $credit_account_id);
         $results = self::setOpening($request->debit_account_id, $request->credit_account_id, $month, $year, $userId);
+        self::setOpening($request->credit_account_id, $request->debit_account_id, $month, $year, $userId);
+        self::setOpeningDeficit($year, $userId);
+
+        $results = [];
         return response()->json([$results, $month, $year], 201);
 
         // return redirect()
@@ -357,7 +438,7 @@ class JournalEntryController extends Controller
                 self::create($userId, $row['entry_date'], $row['entry_type'], $row['description'], $row['reference'], $row['amount'], $row['debit_account_id'], $row['credit_account_id']);
                 self::setOpening($row["debit_account_id"], $row["credit_account_id"], $month, $year, $userId);
                 self::setOpening($row["credit_account_id"], $row["debit_account_id"], $month, $year, $userId);
-                // self::setOpeningDeficit($month, $year, $userId);
+                self::setOpeningDeficit($year, $userId);
             }
         });
 
@@ -388,27 +469,31 @@ class JournalEntryController extends Controller
         }
         return [$results, $validation];
     }
-    // public static function setOpeningDeficit($month, $year, $userId)
-    // {
-    //     $income = IncomeStatementController::getIncomeStatement($userId, $month, $year);
-    //     $total = $income["total"];
-    //     $account = DB::table("accounts")->where("user_id", $userId)->where("account_code", "300.2")->get()->first();
-    //     $nature = $account->nature;
-    //     $account_id = $account->account_id;
-    //     $validation = self::validateOpening($userId, $account_id, $account_id, $month, $year, $nature);
-    //     dd($validation, $account, $total);
-    //     $opening_type = $nature == "debit" ? "opening_balance" : "opening_balance_credit";
-    //     $nextDate = $validation["date"];
-    //     if ($validation["new"] == true) {
-    //         Log::debug('NewOpeningDeficit', [$userId, "$nextDate", $opening_type, "Saldo Inicial", "Saldo Inicial 4", $total, $account_id, $account_id]);
-    //         self::create($userId, "$nextDate", $opening_type, "Saldo Inicial Nuevo", "Saldo Inicial", $total, $account_id, null);
-    //     } else {
-    //         $entry_id = $validation["entry_id"];
-    //         Log::debug('UpdateOpeningDeficit', [$entry_id, $userId, "$nextDate", $opening_type, "Saldo Inicial", "Saldo Inicial 4", $total, $account_id, $account_id]);
-    //         self::update($entry_id, $userId, "$nextDate", $opening_type, "Saldo Inicial Update", "Saldo Inicial", $total, $account_id, null);
-    //     }
-    //     return [$account, $validation];
-    // }
+    public static function setOpeningDeficit($year, $userId)
+    {
+        $income = IncomeStatementController::getIncomeStatement($userId, 12, $year, true);
+        $total = $income["total"];
+        $account = DB::table("accounts")->where("user_id", $userId)->where("code", "300.2")->get()->first();
+        $nature = $account->nature;
+        $account_id = $account->id;
+        $validation = self::validateOpening($userId, $account_id, $account_id, 12, $year, $nature);
+
+        $lastAmount = (float) TrialBalanceController::getTrialBalance($userId, 12, $year)->where("op.account_code", "300.2")->get()->first()->total;
+        $totalAmount = $lastAmount + $total;
+
+        // dd($validation, $account, $total, $lastAmount, $lastAmount + $total);
+        $opening_type = $nature == "debit" ? "opening_balance" : "opening_balance_credit";
+        $nextDate = $validation["date"];
+        if ($validation["new"] == true) {
+            Log::debug('NewOpeningDeficit', [$userId, "$nextDate", $opening_type, "Saldo Inicial", "Saldo Inicial 4", $totalAmount, $account_id, $account_id]);
+            self::create($userId, "$nextDate", $opening_type, "Saldo Inicial Nuevo", "Saldo Inicial", $totalAmount, $account_id, null);
+        } else {
+            $entry_id = $validation["entry_id"];
+            Log::debug('UpdateOpeningDeficit', [$entry_id, $userId, "$nextDate", $opening_type, "Saldo Inicial", "Saldo Inicial 4", $totalAmount, $account_id, $account_id]);
+            self::update($entry_id, $userId, "$nextDate", $opening_type, "Saldo Inicial Update", "Saldo Inicial", $totalAmount, $account_id, null);
+        }
+        return [$account, $validation];
+    }
     private static function validateOpening($userId, $account_id, $credit_account_id, $month, $year, $nature)
     {
         $nextMonth = self::getNextMonth($month, $year);
@@ -466,7 +551,32 @@ class JournalEntryController extends Controller
         $filters = json_decode($request->get('filters'), true) ?? [];
         $limit = (int) $request->get('limit', 10);
         $page = (int) $request->get('page', 1);
+        if ($month == "total") {
+            $results = self::getJournalVoucherClose($userId, $year, $search, $filters, $limit, $page);
+        } else {
+            $results = self::getJournalVoucher($userId, $month, $year, $search, $filters, $limit, $page);
+        }
 
+
+        return response()->json([
+            'total'  => $results["total"],
+            'data'   => $results["data"],
+            'filters' => $results["filters"],
+            'footer' => [
+                'description' => 'TOTAL',
+                'debit'  => $results["debit"],
+                'credit' => $results["credit"],
+                'credit_account_code' => "",
+                'entry_date' => "",
+                'entry_type_label' => "",
+                'debit_account_name' => "",
+                'debit_account_code' => "",
+                'credit_account_name' => "",
+            ],
+        ]);
+    }
+    public static function getJournalVoucher($userId, $month, $year, $search = null, $filters = [], $limit = 10, $page = 1)
+    {
         $query = DB::table('journal_voucher')
             ->where('user_id', $userId);
 
@@ -534,23 +644,60 @@ class JournalEntryController extends Controller
                 'credit'              => $entry->credit,
             ];
         });
+        $returned["total"] = $entries->total();
+        $returned["data"] = $rows;
+        $returned["filters"] = $filters;
+        $returned["debit"] = $totalDebit;
+        $returned["credit"] = $totalCredit;
+        return $returned;
 
         // --- PASO 5: Devolver el JSON (sin cambios) ---
-        return response()->json([
-            'total'  => $entries->total(),
-            'data'   => $rows,
-            'filters' => $filters,
-            'footer' => [
-                'description' => 'TOTAL',
-                'debit'  => $totalDebit,
-                'credit' => $totalCredit,
-                'credit_account_code' => "",
-                'entry_date' => "",
-                'entry_type_label' => "",
-                'debit_account_name' => "",
-                'debit_account_code' => "",
-                'credit_account_name' => "",
-            ],
-        ]);
+    }
+    public static function getJournalVoucherClose($userId, $year, $search = null, $filters = [], $limit = 10, $page = 1)
+    {
+        $rows = TrialBalanceController::getTrialBalanceSummary($userId, 12, $year);
+        $prefixes = ['400.', '500.', '600.', '700.', '800.', '900.'];
+
+        $data = $rows->where(function ($q) use ($prefixes) {
+            foreach ($prefixes as $prefix) {
+                $q->orWhere('op.account_code', 'like', $prefix . '%');
+            }
+        });
+        // $results = $data->paginate($limit);
+        // $allEntries = $data->get();
+        $entries = [];
+        $totalDebit = 0;
+        $totalCredit = 0;
+        foreach ($data->get() as $key => $entry) {
+            $totalDebit += $entry->credit + $entry->debit;
+            $totalCredit += $entry->credit + $entry->debit;
+        }
+        $results = $data->paginate($limit);
+        $entries = $results->getCollection()->map(function ($entry) use ($year) {
+            if ($entry->nature == "debit") {
+                $type = "Egreso";
+            } else {
+                $type = "Ingreso";
+            }
+            return [
+                'id'                   => null,
+                'entry_date'           => "01/12/$year",
+                'entry_type_label'     => $type,
+                'description'          => "POLIZA CIERRE",
+                'debit_account_name'   => $entry->account_name,
+                'debit_account_code'   => $entry->account_code,
+                'credit_account_name'  => "REMANENTE O DEFICIT EJERCICIO $year",
+                'credit_account_code'  => "300.1",
+                'debit'                => round($entry->credit + $entry->debit, 2),
+                'credit'               => round($entry->credit + $entry->debit, 2),
+            ];
+        });
+
+        $returned["total"] = $results->total();
+        $returned["data"] = $entries;
+        $returned["filters"] = [];
+        $returned["debit"] = $totalDebit;
+        $returned["credit"] = $totalCredit;
+        return $returned;
     }
 }
