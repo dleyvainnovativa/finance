@@ -33,5 +33,7 @@ Route::middleware('firebase.jwt')->group(function () {
     Route::get('/balance_sheet', [BalanceSheetController::class, 'index'])->name('api.balance-sheet');
     Route::post('/accounts', [AccountController::class, 'store'])->name('accounts.add');
     Route::post('/entries', [JournalEntryController::class, 'store'])->name('entries.add');
+    Route::put('/entries', [JournalEntryController::class, 'change'])->name('entries.update');
+    Route::delete('/entries', [JournalEntryController::class, 'delete'])->name('entries.delete');
     Route::post('/entries/import', [JournalEntryController::class, 'import'])->name('entries.import');
 });

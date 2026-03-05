@@ -40,6 +40,9 @@ class AccountController extends Controller
                 'type_label'                  => $entry->type_account,
                 'nature'                  => $entry->nature,
                 'nature_label'                  => $entry->nature_label,
+                'allows_children'                  => $entry->allows_children,
+                'is_editable'                  => $entry->is_editable,
+                'is_deletable'                  => $entry->is_deletable,
             ];
         });
 
@@ -57,11 +60,15 @@ class AccountController extends Controller
             ->where('user_id', $userId);
 
         $type = $request->get('type', null);
-        if ($type == "create") {
-            $entries = $query->orderBy('code')->get();
-        } else {
-            $entries = $query->orderBy('code')->get();
-        }
+        // if ($type == "create") {
+        // $entries = $query->orderBy('code')->get();
+        // } else {
+        $entries = $query->orderByRaw("
+    CAST(SUBSTRING_INDEX(code, '.', 1) AS UNSIGNED),
+    CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(code, '.', 2), '.', -1) AS UNSIGNED),
+    CAST(SUBSTRING_INDEX(code, '.', -1) AS UNSIGNED)
+")->get();
+        // }
         $rows = $entries->map(function ($entry) {
             return [
                 'id'                  => $entry->id,

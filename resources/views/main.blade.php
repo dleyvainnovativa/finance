@@ -62,6 +62,7 @@
         </div>
     </div>
     @include("components.alert")
+    @include("components.popup")
     <script>
         let tableOptions = {
             // 1. Custom Loading Template

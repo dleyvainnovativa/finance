@@ -75,20 +75,45 @@ window.ajaxRequest = ajaxRequest;
 
 
 function actionsFormatter(value, row) {
+    let remove = `
+    <button disabled 
+        class="btn btn-outline-danger"
+        title="Eliminar cuenta">
+        <i class="fa-solid fa-trash"></i>
+    </button>
+    `;
+    let edit = `
+    <button disabled 
+    class="btn btn-outline-primary"
+    title="Editar cuenta">
+    <i class="fa-solid fa-pen"></i>
+</button>
+    `;
+    if(row.is_editable){
+edit = `
+<button
+    class="btn btn-outline-primary"
+    onclick="editAccount(${value})"
+    title="Editar cuenta">
+    <i class="fa-solid fa-pen"></i>
+</button>
+`;
+    }
+    if(row.is_deletable){
+     remove = `
+     <button
+        class="btn btn-outline-danger"
+        onclick="removeAccount(${value})"
+        title="Eliminar cuenta">
+        <i class="fa-solid fa-trash"></i>
+    </button>
+     `;   
+    }
     return `<div class="btn-group btn-group-sm">
-                        <button
-                            class="btn btn-outline-primary"
-                            onclick="editAccount(${value})"
-                            title="Editar cuenta">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
+                        ${edit}
+                        ${remove}
 
-                        <button
-                            class="btn btn-outline-danger"
-                            onclick="removeAccount(${value})"
-                            title="Eliminar cuenta">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
+                        
                     </div>`;
 }
 window.actionsFormatter = actionsFormatter
@@ -268,14 +293,19 @@ window.customViewFormatter = data => {
             amountClass = 'text-danger'
         }
         let icon = getEntryIcon(row.entry_type);
-        let edit = `onclick="editAccount(${row.id})"`;
-        let remove = `onclick="removeAccount(${row.id})"`;
+        let edit = ``;
+        let remove = ``;
+
+        edit = `onclick="editAccount(${row.id})"`;
+        remove = `onclick="removeAccount(${row.id})"`;
         view += template
             .replace('%id%', row.id)
             .replace('%icon%', getEntryIcon(row.type))
             .replace('%account_name%', row.name)
             .replace('%edit%', edit)
             .replace('%remove%', remove)
+            .replace('%is_editable%', row.is_editable ? "":"disabled")
+            .replace('%is_deletable%', row.is_deletable ? "":"disabled")
             .replace('%account_code%', row.code)
             .replace('%type_label%', row.type_label)
             .replace('%nature_label%', row.nature_label)

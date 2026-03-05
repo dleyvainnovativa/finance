@@ -107,6 +107,7 @@ class JournalEntryController extends Controller
                 'entry_date'          => Carbon::parse($entry->entry_date)->format('d/m/Y'),
                 'entry_type_label'    => $entry->entry_type,
                 'description'         => $entry->description,
+                'reference'         => $entry->reference,
                 'debit_account_name'  => $entry->debit_account_name,
                 'debit_account_code'  => $entry->debit_account_code,
                 'credit_account_name' => $entry->credit_account_name,
@@ -265,6 +266,66 @@ class JournalEntryController extends Controller
         //     ->back()
         //     ->with('success', 'Movimiento registrado correctamente');
     }
+    public function change(Request $request)
+    {
+        $request->validate([
+            'entry_id' => ['required', 'string'],
+            'entry_date' => ['required', 'date'],
+            'entry_type' => ['required', 'in:income,expense,opening_balance,opening_balance_credit,transfer'],
+            'amount' => ['required', 'numeric', 'min:0.01'],
+            'description' => ['required', 'string'],
+            'reference' => ['nullable', 'string'],
+        ]);
+        $userId = $request->user()->id;
+        $entry_id = $request->entry_id;
+        $entry_date = $request->entry_date;
+        $entry_type = $request->entry_type;
+        $description = $request->description;
+        $reference = $request->reference;
+        $amount = $request->amount;
+
+
+        $month = self::getMonth($entry_date);
+        $year = self::getYear($entry_date);
+
+        $results = DB::table('journal')->where("entry_id", $entry_id)->get()->first();
+        $debit_account_id = $results->debit_account_id;
+        $credit_account_id = $results->credit_account_id;
+
+        self::update($entry_id, $userId, $entry_date, $entry_type, $description, $reference, $amount, $debit_account_id, $credit_account_id);
+        $results = self::setOpening($debit_account_id, $credit_account_id, $month, $year, $userId);
+        self::setOpening($credit_account_id, $debit_account_id, $month, $year, $userId);
+        self::setOpeningDeficit($year, $userId);
+
+        // $results = [];
+        return response()->json([$results], 201);
+    }
+    public function delete(Request $request)
+    {
+        $request->validate([
+            'entry_id' => ['required', 'string'],
+            'entry_date' => ['required', 'date'],
+        ]);
+        $userId = $request->user()->id;
+        $entry_id = $request->entry_id;
+        $entry_date = $request->entry_date;
+
+
+        $month = self::getMonth($entry_date);
+        $year = self::getYear($entry_date);
+
+        $results = DB::table('journal')->where("entry_id", $entry_id)->get()->first();
+        $debit_account_id = $results->debit_account_id;
+        $credit_account_id = $results->credit_account_id;
+
+        self::remove($entry_id, $userId);
+        $results = self::setOpening($debit_account_id, $credit_account_id, $month, $year, $userId);
+        self::setOpening($credit_account_id, $debit_account_id, $month, $year, $userId);
+        self::setOpeningDeficit($year, $userId);
+
+        // $results = [];
+        return response()->json([$results, $debit_account_id, $credit_account_id], 201);
+    }
 
     public function getMonth(string $date): int
     {
@@ -275,6 +336,19 @@ class JournalEntryController extends Controller
         return Carbon::parse($date)->year;
     }
 
+    private static function remove($entry_id, $userId)
+    {
+
+        DB::transaction(function () use (
+            $entry_id,
+            $userId,
+        ) {
+            // 1️⃣ Create journal entry
+            $entry = JournalEntry::destroy([
+                'id' => $entry_id
+            ]);
+        });
+    }
     private static function create($userId, $entry_date, $entry_type, $description, $reference, $amount, $debit_account_id, $credit_account_id)
     {
 

@@ -14,13 +14,14 @@ return new class extends Migration
   {
     DB::statement("
             CREATE OR REPLACE VIEW journal AS
-            with main_table as (
+with main_table as (
   select 
     `je`.`id` AS `entry_id`, 
     `je`.`user_id` AS `user_id`, 
     `je`.`entry_date` AS `entry_date`, 
     `je`.`entry_type` AS `entry_type`, 
     `je`.`description` AS `description`, 
+    `je`.`reference` AS `reference`, 
     `da`.`id` AS `debit_account_id`, 
     `da`.`name` AS `debit_account_name`, 
     `da`.`code` AS `debit_account_code`, 
@@ -66,6 +67,7 @@ return new class extends Migration
     `je`.`entry_date` AS `entry_date`, 
     `je`.`entry_type` AS `entry_type`, 
     `je`.`description` AS `description`, 
+    `je`.`reference` AS `reference`, 
     `da`.`id` AS `debit_account_id`, 
     `da`.`name` AS `debit_account_name`, 
     `da`.`code` AS `debit_account_code`, 
@@ -112,6 +114,7 @@ return new class extends Migration
     `je`.`entry_date` AS `entry_date`, 
     `je`.`entry_type` AS `entry_type`, 
     `je`.`description` AS `description`, 
+    `je`.`reference` AS `reference`, 
     `ca`.`id` AS `debit_account_id`, 
     `ca`.`name` AS `debit_account_name`, 
     `ca`.`code` AS `debit_account_code`, 
@@ -158,6 +161,7 @@ select
   `main_table`.`entry_date` AS `entry_date`, 
   `main_table`.`entry_type` AS `entry_type`, 
   `main_table`.`description` AS `description`, 
+  `main_table`.`reference` AS `reference`, 
   `main_table`.`debit_account_id` AS `debit_account_id`, 
   `main_table`.`debit_account_name` AS `debit_account_name`, 
   `main_table`.`debit_account_code` AS `debit_account_code`, 

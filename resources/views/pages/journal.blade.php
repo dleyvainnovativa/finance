@@ -105,6 +105,7 @@
     </div>
 </template>
 @include("offcanvas.journal_filters")
+@include("modals.edit_journal")
 @vite(["resources/js/journal.js"])
 
 @endsection

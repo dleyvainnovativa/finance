@@ -50,6 +50,74 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+
+async function confirmModal({ title, text, mode = "confirm", confirmText = "Ok", cancelButton = true }) {
+    return new Promise((resolve) => {
+
+        let modalEl = document.getElementById("popupModal");
+        let bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+        // DOM elements
+        let titleEl = document.getElementById("popup_title");
+        let textEl = document.getElementById("popup_text");
+        let cancelBtn = document.getElementById("cancel_btn");
+
+        let confirmIcon = document.getElementById("confirm_popup_icon");
+        let warningIcon = document.getElementById("warning_popup_icon");
+
+        let confirmBtn = document.getElementById("confirm_popup_btn");
+        let warningBtn = document.getElementById("warning_popup_btn");
+
+        if(cancelButton){
+            cancelBtn.hidden=false;
+        }else{
+            cancelBtn.hidden=true;
+
+
+        }
+
+        // Reset icons and buttons
+        confirmIcon.classList.add("d-none");
+        warningIcon.classList.add("d-none");
+        confirmBtn.classList.add("d-none");
+        warningBtn.classList.add("d-none");
+        
+        // Apply content
+        titleEl.innerText = title;
+        textEl.innerText = text;
+        confirmBtn.textContent = confirmText;
+        warningBtn.textContent = confirmText;
+
+        // Apply mode
+        if (mode === "confirm") {
+            confirmIcon.classList.remove("d-none");
+            confirmBtn.classList.remove("d-none");
+        } else {
+            warningIcon.classList.remove("d-none");
+            warningBtn.classList.remove("d-none");
+        }
+        // Button handlers
+        const confirmHandler = () => {
+            cleanup();
+            resolve(true);
+            bsModal.hide();
+        };
+        const cancelHandler = () => {
+            cleanup();
+            resolve(false);
+        };
+        confirmBtn.addEventListener("click", confirmHandler, { once: true });
+        warningBtn.addEventListener("click", confirmHandler, { once: true });
+        modalEl.addEventListener("hidden.bs.modal", cancelHandler, { once: true });
+
+        function cleanup() {
+            modalEl.removeEventListener("hidden.bs.modal", cancelHandler);
+        }
+        // Show modal
+        bsModal.show();
+    });
+}
+
 function showAlert(
     title,
     message,
@@ -270,6 +338,14 @@ function formatCurrency(value) {
     }
 }
 
+function formatDate(dateString) {
+    let [part1, part2, year] = dateString.split('/');
+    // change order depending on your format
+    return `${year}-${part2.padStart(2,'0')}-${part1.padStart(2,'0')}`;
+}
+
+window.confirmModal=confirmModal;
+window.formatDate=formatDate;
 window.formatMoney=formatMoney;
 window.formatTextClass=formatTextClass;
 window.formatCurrency=formatCurrency;

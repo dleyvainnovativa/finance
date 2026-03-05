@@ -69,14 +69,14 @@
                         </div>
                     </div>
                     <div class="btn-group btn-group-sm">
-                        <button
+                        <button %is_editable%
                             class="btn btn-outline-primary"
                             %edit%
                             title="Editar cuenta">
                             <i class="fa-solid fa-pen"></i>
                         </button>
 
-                        <button
+                        <button %is_deletable%
                             class="btn btn-outline-danger"
                             %remove%
                             title="Eliminar cuenta">
