@@ -65,6 +65,12 @@
                     Flujo de Efectivo
                 </small>
             </a>
+            <a href="{{ route('managed_cash_flow') }}" class="list-group-item list-group-item-action {{ request()->routeIs('managed_cash_flow') ? 'active' : '' }}">
+                <small class="text-dark">
+                    <i class="fa-solid fa-money-bill-trend-up text-primary start-icon"></i>
+                    FEA
+                </small>
+            </a>
 
             <a href="{{ route('balance_sheet') }}" class="list-group-item list-group-item-action {{ request()->routeIs('balance_sheet') ? 'active' : '' }}">
                 <small class="text-dark">

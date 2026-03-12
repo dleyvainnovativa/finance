@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\CashFlowController;
 use App\Http\Controllers\Api\EntryController;
 use App\Http\Controllers\Api\IncomeStatementController;
 use App\Http\Controllers\Api\JournalEntryController;
+use App\Http\Controllers\Api\ManagedCashFlowController;
 use App\Http\Controllers\Api\TrialBalanceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,8 @@ Route::middleware('firebase.jwt')->group(function () {
     Route::get('/trial_balance', [TrialBalanceController::class, 'index'])->name('api.trial-balance');
     Route::get('/income_statement', [IncomeStatementController::class, 'index'])->name('api.income-statement');
     Route::get('/cash_flow', [CashFlowController::class, 'index'])->name('api.cash-flow');
+    Route::get('/managed_cash_flow', [ManagedCashFlowController::class, 'index'])->name('api.managed-cash-flow');
+    Route::post('/managed_cash_flow/save', [ManagedCashFlowController::class, 'save'])->name('api.managed-cash-flow.save');
     Route::get('/budget', [BudgetController::class, 'index'])->name('api.budget');
     Route::get('/budget_monthly', [BudgetMonthlyController::class, 'index'])->name('api.budget-monthly');
     Route::post('/budget/save', [BudgetController::class, 'save'])->name('api.budget.save');

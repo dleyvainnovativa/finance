@@ -18,6 +18,7 @@ export default defineConfig({
                 'resources/js/trial-balance.js',
                 'resources/js/income_statement.js',
                 'resources/js/cash_flow.js',
+                'resources/js/managed_cash_flow.js',
                 'resources/js/balance_sheet.js',
                 'resources/js/budget.js',
                 'resources/js/average.js',

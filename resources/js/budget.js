@@ -332,7 +332,8 @@ function saveFile() {
     .then(res => res.json())
     .then(res => {
         console.log(res);
-        alert('PR saved successfully');
+        // alert('PR saved successfully');
+        showAlert("Archivo guardado","Se han actualizado correctamente los datos","","success")
     })
     .catch(err => {
         console.error(err);

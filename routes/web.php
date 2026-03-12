@@ -41,6 +41,9 @@ Route::middleware('firebase.auth')->group(function () {
     Route::get('/cash-flow', function () {
         return view('pages.cash_flow');
     })->name("cash_flow");
+    Route::get('/managed-cash-flow', function () {
+        return view('pages.managed_cash_flow');
+    })->name("managed_cash_flow");
     Route::get('/balance-sheet', function () {
         return view('pages.balance_sheet');
     })->name("balance_sheet");
