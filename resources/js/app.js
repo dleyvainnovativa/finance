@@ -27,8 +27,8 @@ window.api_url=api_url;
 
 
 document.addEventListener("DOMContentLoaded", () => {
-    const root = document.documentElement; // 👈 html
-    const toggleButton = document.getElementById("themeToggle");
+    const root = document.documentElement;
+    const toggle = document.getElementById("themeToggle");
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
 
     function applyThemeColor(isLight) {
@@ -38,15 +38,22 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
-    const isLight = root.classList.contains("theme-light");
-    applyThemeColor(isLight);
-
-    toggleButton?.addEventListener("click", () => {
-        root.classList.toggle("theme-light");
-        const light = root.classList.contains("theme-light");
-
-        localStorage.setItem("theme", light ? "light" : "dark");
-        applyThemeColor(light);
+    // 🔹 Load saved theme
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") {
+        root.classList.add("theme-light");
+        toggle.checked = true;
+    } else {
+        root.classList.remove("theme-light");
+        toggle.checked = false;
+    }
+    applyThemeColor(toggle.checked);
+    // 🔹 Listen to switch change
+    toggle.addEventListener("change", () => {
+        const isLight = toggle.checked;
+        root.classList.toggle("theme-light", isLight);
+        localStorage.setItem("theme", isLight ? "light" : "dark");
+        applyThemeColor(isLight);
     });
 });
 

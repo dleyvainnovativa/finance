@@ -45,7 +45,7 @@
 
             <div class="modal-footer card-dark border-0">
                 <a class="btn btn-outline-primary" data-bs-dismiss="modal">Cancelar</a>
-                <button type="submit" class="btn btn-primary">Agregar cuenta</button>
+                <button type="submit" class="btn btn-outline-primary">Agregar cuenta</button>
             </div>
         </form>
     </div>

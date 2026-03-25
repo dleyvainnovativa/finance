@@ -43,5 +43,6 @@ Route::middleware('firebase.jwt')->group(function () {
     Route::post('/entries', [JournalEntryController::class, 'store'])->name('entries.add');
     Route::put('/entries', [JournalEntryController::class, 'change'])->name('entries.update');
     Route::delete('/entries', [JournalEntryController::class, 'delete'])->name('entries.delete');
+    Route::delete('/entries/bulk-delete', [JournalEntryController::class, 'bulkDelete'])->name('entries.bulk-delete');
     Route::post('/entries/import', [JournalEntryController::class, 'import'])->name('entries.import');
 });

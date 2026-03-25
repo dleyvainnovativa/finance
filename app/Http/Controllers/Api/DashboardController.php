@@ -43,6 +43,8 @@ class DashboardController extends Controller
                 'balance'   => $balance,
                 'journal'   => $journal["data"],
                 'accounts'   => $accounts,
+                'debit_accounts'   => $debit_accounts,
+                'credit_accounts'   => $credit_accounts,
 
                 // 'debit_accounts'   => $debit_accounts,
                 // 'credit_accounts'   => $credit_accounts,

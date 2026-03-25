@@ -61,6 +61,30 @@
                     </div>
                 </div>
             </div>
+            <div class="accordion-item bg-transparent border-dark">
+                <h2 class="accordion-header" id="headingDate">
+                    <button class="accordion-button collapsed bg-transparent text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDate">
+                        Fecha de Registro
+                    </button>
+                </h2>
+
+                <div id="collapseDate" class="accordion-collapse collapse show" data-bs-parent="#filtersAccordion">
+                    <div class="accordion-body">
+                        <div id="filter-date-entries" class="filter-list text-dark">
+                            <div class="row g-4">
+                                <div class="col-6">
+                                    <label class="form-label fw-bold">Fecha Desde</label>
+                                    <input class="form-control" type="date" id="filter_start_date" data-filter="entry_date">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label fw-bold">Fecha Hasta</label>
+                                    <input class="form-control" type="date" id="filter_end_date" data-filter="entry_date">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- Cuenta Cargo -->
             <div class="accordion-item bg-transparent border-dark">
                 <h2 class="accordion-header" id="headingDebit">

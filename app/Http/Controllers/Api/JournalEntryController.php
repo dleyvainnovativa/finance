@@ -69,6 +69,17 @@ class JournalEntryController extends Controller
         $debitAccounts = $filters['debit_accounts'] ?? null;
         $creditAccounts = $filters['credit_accounts'] ?? null;
         $typesFilter = $filters['types'] ?? null;
+        $start_date = $filters['start_date'] ?? null;
+        $end_date = $filters['end_date'] ?? null;
+
+        // Date filter
+        if ($start_date && !$end_date) {
+            $query->whereDate('entry_date', $start_date);
+        } elseif (!$start_date && $end_date) {
+            $query->whereDate('entry_date', '<=', $end_date);
+        } elseif ($start_date && $end_date) {
+            $query->whereBetween('entry_date', [$start_date, $end_date]);
+        }
 
         // La lógica OR para los filtros de cuenta ahora es mucho más legible.
         if ($debitAccounts || $creditAccounts) {
@@ -119,11 +130,14 @@ class JournalEntryController extends Controller
             return [
                 'id'                  => $entry->entry_id,
                 'entry_date'          => Carbon::parse($entry->entry_date)->format('d/m/Y'),
-                'entry_type_label'    => $entry->entry_type,
+                'entry_type'          => $entry->entry_type,
+                'entry_type_label'    => self::translateJournalType($entry->entry_type),
                 'description'         => $entry->description,
                 'reference'         => $entry->reference,
+                'debit_account_id'  => $entry->debit_account_id,
                 'debit_account_name'  => $entry->debit_account_name,
                 'debit_account_code'  => $entry->debit_account_code,
+                'credit_account_id' => $entry->credit_account_id,
                 'credit_account_name' => $entry->credit_account_name,
                 'credit_account_code' => $entry->credit_account_code,
                 'debit'               => $entry->debit,
@@ -170,8 +184,10 @@ class JournalEntryController extends Controller
                 'entry_date'           => "01/12/$year",
                 'entry_type_label'     => $type,
                 'description'          => "POLIZA CIERRE",
+                'debit_account_id'  => $entry->debit_account_id,
                 'debit_account_name'   => $entry->account_name,
                 'debit_account_code'   => $entry->account_code,
+                'credit_account_id' => $entry->credit_account_id,
                 'credit_account_name'  => "REMANENTE O DEFICIT EJERCICIO $year",
                 'credit_account_code'  => "300.1",
                 'debit'                => round($entry->credit, 2),
@@ -291,6 +307,8 @@ class JournalEntryController extends Controller
     {
         $request->validate([
             'entry_id' => ['required', 'string'],
+            'credit_account_id' => ['required', 'string'],
+            'debit_account_id' => ['required', 'string'],
             'entry_date' => ['required', 'date'],
             'entry_type' => ['required', 'in:income,expense,opening_balance,opening_balance_credit,transfer'],
             'amount' => ['required', 'numeric', 'min:0.01'],
@@ -299,6 +317,8 @@ class JournalEntryController extends Controller
         ]);
         $userId = $request->user()->id;
         $entry_id = $request->entry_id;
+        $new_debit = $request->debit_account_id;
+        $new_credit = $request->credit_account_id;
         $entry_date = $request->entry_date;
         $entry_type = $request->entry_type;
         $description = $request->description;
@@ -308,17 +328,28 @@ class JournalEntryController extends Controller
 
         $month = self::getMonth($entry_date);
         $year = self::getYear($entry_date);
+        $results = [];
 
         $results = DB::table('journal')->where("entry_id", $entry_id)->get()->first();
         $debit_account_id = $results->debit_account_id;
         $credit_account_id = $results->credit_account_id;
 
-        self::update($entry_id, $userId, $entry_date, $entry_type, $description, $reference, $amount, $debit_account_id, $credit_account_id);
-        $results = self::setOpening($debit_account_id, $credit_account_id, $month, $year, $userId);
-        self::setOpening($credit_account_id, $debit_account_id, $month, $year, $userId);
+        $current_entry_date = $results->entry_date;
+        $current_month = self::getMonth($current_entry_date);
+        $current_year = self::getYear($current_entry_date);
+
+        // dd($debit_account_id, $new_debit, $credit_account_id, $new_credit);
+        self::update($entry_id, $userId, $entry_date, $entry_type, $description, $reference, $amount, $new_debit, $new_credit);
+
+        $results = self::setOpening($new_debit, $new_credit, $month, $year, $userId);
+        self::setOpening($new_credit, $new_debit, $month, $year, $userId);
         self::setOpeningDeficit($year, $userId);
 
-        // $results = [];
+        $results = self::setOpening($debit_account_id, $credit_account_id, $current_month, $current_year, $userId);
+        self::setOpening($credit_account_id, $debit_account_id, $current_month, $current_year, $userId);
+        self::setOpeningDeficit($current_year, $userId);
+
+        // // $results = [];
         return response()->json([$results], 201);
     }
     public function delete(Request $request)
@@ -341,25 +372,39 @@ class JournalEntryController extends Controller
 
         // dd($results);
         self::remove($entry_id, $userId);
-        // if ($results->entry_type == "opening_balance" || $results->entry_type == "opening_balance_credit") {
-        //     // $results = self::setOpening($debit_account_id, $credit_account_id, $month, $year, $userId);
-        //     if ($credit_account_id) {
-        //         self::setOpening($credit_account_id, $debit_account_id, $month, $year, $userId);
-        //     }
-        // } else {
-        //     self::setOpening($debit_account_id, $credit_account_id, $month, $year, $userId);
-        //     if ($credit_account_id) {
-        //         self::setOpening($credit_account_id, $debit_account_id, $month, $year, $userId);
-        //     }
-        // }
-        // self::setOpening($credit_account_id, $debit_account_id, $month, $year, $userId);
-        // self::setOpening($debit_account_id, $credit_account_id, $month, $year, $userId);
         $results = self::setOpening($debit_account_id, $credit_account_id, $month, $year, $userId);
         self::setOpening($credit_account_id, $debit_account_id, $month, $year, $userId);
         self::setOpeningDeficit($year, $userId);
 
         // $results = [];
         return response()->json([$results, $debit_account_id, $credit_account_id], 201);
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $request->validate([
+            'entries' => ['required', 'array'],
+            'entries.*.entry_id' => ['required', 'string'],
+            'entries.*.entry_date' => ['required', 'date'],
+        ]);
+
+        $userId = $request->user()->id;
+        foreach ($request->entries as $entry) {
+            $entry_id = $entry['entry_id'];
+            $entry_date = $entry['entry_date'];
+            $month = self::getMonth($entry_date);
+            $year = self::getYear($entry_date);
+            $result = DB::table('journal')->where("entry_id", $entry_id)->first();
+            if (!$result) continue;
+            $debit_account_id = $result->debit_account_id;
+            $credit_account_id = $result->credit_account_id;
+            self::remove($entry_id, $userId);
+            self::setOpening($debit_account_id, $credit_account_id, $month, $year, $userId);
+            self::setOpening($credit_account_id, $debit_account_id, $month, $year, $userId);
+            self::setOpeningDeficit($year, $userId);
+        }
+
+        return response()->json(['message' => 'Deleted successfully'], 200);
     }
 
     public function getMonth(string $date): int
@@ -563,17 +608,18 @@ class JournalEntryController extends Controller
         $total = $results->total ?? 0;
         $nature = $results->nature;
         $validation = self::validateOpening($userId, $account_id, $credit_account_id, $month, $year, $nature);
+        $prefixes = ['400.', '500.', '600.', '700.', '800.', '900.'];
         // dd($validation, $results, $total);
         $opening_type = $nature == "debit" ? "opening_balance" : "opening_balance_credit";
         $nextDate = $validation["date"];
         if ($validation["new"] == true) {
             Log::debug('NewOpening', [$userId, "$nextDate", $opening_type, "Saldo Inicial", "Saldo Inicial 4", $total, $account_id, $credit_account_id]);
-            // dd("new", $userId, "$nextDate", $opening_type, "Saldo Inicial", "Saldo Inicial 2", $total, $account_id, $credit_account_id);
+            // If Month == 12 and account_id has prefix on $prefixes then $total = 0 
             self::create($userId, "$nextDate", $opening_type, "Saldo Inicial Nuevo", "Saldo Inicial", $total, $account_id, null);
         } else {
             $entry_id = $validation["entry_id"];
             Log::debug('UpdateOpening', [$entry_id, $userId, "$nextDate", $opening_type, "Saldo Inicial", "Saldo Inicial 4", $total, $account_id, $credit_account_id]);
-            // dd("update", $entry_id, $userId, "$nextDate", $opening_type, "Saldo Inicial", "Saldo Inicial 4", $total, $account_id, $credit_account_id);
+            // If Month == 12 and account_id has prefix on $prefixes then $total = 0 
             self::update($entry_id, $userId, "$nextDate", $opening_type, "Saldo Inicial Update", "Saldo Inicial", $total, $account_id, null);
         }
         return [$results, $validation];
@@ -707,6 +753,19 @@ class JournalEntryController extends Controller
         $debitAccounts = $filters['debit_accounts'] ?? null;
         $creditAccounts = $filters['credit_accounts'] ?? null;
         $typesFilter = $filters['types'] ?? null;
+        $datesFilter = $filters['dates'] ?? null;
+
+        $start_date = $filters['start_date'] ?? null;
+        $end_date = $filters['end_date'] ?? null;
+
+        // Date filter
+        if ($start_date && !$end_date) {
+            $query->whereDate('entry_date', $start_date);
+        } elseif (!$start_date && $end_date) {
+            $query->whereDate('entry_date', '<=', $end_date);
+        } elseif ($start_date && $end_date) {
+            $query->whereBetween('entry_date', [$start_date, $end_date]);
+        }
 
 
         // La lógica OR para los filtros de cuenta ahora es mucho más legible.
@@ -753,7 +812,8 @@ class JournalEntryController extends Controller
             return [
                 'id'                  => $entry->entry_id,
                 'entry_date'          => Carbon::parse($entry->entry_date)->format('d/m/Y'),
-                'entry_type_label'    => $entry->entry_type,
+                'entry_type'          => $entry->entry_type,
+                'entry_type_label'    => self::translateJournalType($entry->entry_type),
                 'description'         => $entry->description,
                 'debit_account_name'  => $entry->debit_account_name,
                 'debit_account_code'  => $entry->debit_account_code,
@@ -818,5 +878,19 @@ class JournalEntryController extends Controller
         $returned["debit"] = $totalDebit;
         $returned["credit"] = $totalCredit;
         return $returned;
+    }
+    public static function translateJournalType(string $type): string
+    {
+        $map = [
+            'opening_balance' => 'Saldo Inicial Cuenta Deudora',
+            'opening_balance_credit' => 'Saldo Inicial Cuenta Acreedora',
+            'income' => 'Ingreso',
+            'expense' => 'Gasto',
+            'transfer' => 'Traspaso',
+            'asset_acquisition' => 'Adquisición de Activo',
+            'adjustment' => 'Ajuste',
+        ];
+
+        return $map[$type] ?? 'Desconocido';
     }
 }

@@ -19,7 +19,8 @@ const month = document.getElementById('month-filter')?.value;
         .then(res => res.json())
         .then(data => {
             // console.log(data);
-            buildAccounts(data.accounts, "accounts");
+            buildAccounts(data.debit_accounts, "debit-accounts");
+            buildAccounts(data.credit_accounts, "credit-accounts");
             buildHeaderCards(data.income_month, "income_month");
             buildHeaderCards(data.income_year, "income_year");
             buildHeaderCards(data.balance, "balance");
@@ -34,11 +35,11 @@ initRequest();
 
 function buildAccounts(data, id) {
     let html = '';
-
+    let total = 0;
     data.forEach(account => {
-
+        total += parseFloat(account.total);
         html += `
-        <div class="col-12 col-md-6 col-lg-4 col-xl-3 col-xxl-2">
+        <div class="col-12 col-md-6 col-lg-4 col-xl-3 col-xxl-3">
             <div class="card card-dark border border-dark bg-dark h-100">
                 <div class="card-body p-4 text-dark">
                     <div class="row g-2">
@@ -60,7 +61,8 @@ function buildAccounts(data, id) {
         </div>
         `;
     });
-
+    console.log(total);
+    document.getElementById(`cards-${id}-total`).textContent = `${formatCurrency(total)}`;
     document.getElementById(`cards-${id}`).innerHTML = html;
 }
 

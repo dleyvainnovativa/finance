@@ -888,3 +888,65 @@ button.gridjs-sort-neutral{
 .table{
     border-color: var(--muted-bg-color);
 }
+
+/* Theme Toggle */
+.theme-switch input {
+    display: none;
+}
+.switch {
+    position: relative;
+    width: 70px;
+    height: 36px;
+    background:  var(--card-color);
+    border-radius: 50px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    transition: background 0.3s ease;
+}
+/* Dark background when active */
+.theme-switch input:checked + .switch {
+    background: var(--card-color);
+}
+/* Slider circle */
+.slider {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    background: var(--primary-color); /* Bootstrap primary */
+    border-radius: 50%;
+    left: 4px;
+    transition: transform 0.3s ease;
+    z-index: 0;
+}
+/* Move circle */
+.theme-switch input:checked + .switch .slider {
+    transform: translateX(31px);
+}
+
+/* Icons */
+.icon {
+    width: 50%;
+    text-align: center;
+    z-index: 1;
+    font-size: 14px;
+}
+
+/* Default icon colors */
+.sun {
+    color: var(--white-color);
+}
+
+.moon {
+    color: var(--white-color);
+}
+
+/* Active state */
+.theme-switch input:checked + .switch .sun {
+    color: var(--white-color);
+}
+
+.theme-switch input:checked + .switch .moon {
+    color: var(--primary-color);
+}

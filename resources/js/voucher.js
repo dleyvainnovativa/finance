@@ -16,6 +16,8 @@ function ajaxRequest(params) {
         "debit_accounts": (selectedDebitAccounts),
         "credit_accounts": (selectedCreditAccounts),
         "types": (selectedTypes),
+        "start_date": (startDate),
+        "end_date": (endDate),
 
         };
 
@@ -90,6 +92,8 @@ document.addEventListener('DOMContentLoaded', function () {
 let selectedDebitAccounts = [];
 let selectedCreditAccounts = [];
 let selectedTypes = ['income', 'expense', 'transfer', 'asset_acquisition'];
+let startDate = null;
+let endDate = null;
 
 function loadAccountFilters() {
     fetch(`${api_url}journal/filters`, {
@@ -149,6 +153,8 @@ document.getElementById('filters-reset').onclick = () => {
     setAll('credit', false);
     selectedDebitAccounts = [];
     selectedCreditAccounts = [];
+    startDate = null;
+    endDate = null;
     $('#journal-table').bootstrapTable('refresh', { pageNumber: 1 });
 };
 
@@ -156,6 +162,8 @@ document.getElementById('filters-apply').onclick = () => {
     selectedDebitAccounts = getChecked('debit');
     selectedCreditAccounts = getChecked('credit');
     selectedTypes = getChecked('entry_type');
+    startDate = document.getElementById("filter_start_date").value;
+    endDate = document.getElementById("filter_end_date").value;
 
 
     $('#journal-table').bootstrapTable('refresh', { pageNumber: 1 });
@@ -187,7 +195,7 @@ window.customViewFormatter = data => {
             amountClass = 'text-danger'
         }
 
-        let icon = getEntryIcon(row.entry_type_label);
+        let icon = getEntryIcon(row.entry_type);
 
         view += template
             .replace('%icon%', icon)

@@ -41,6 +41,8 @@
 </head>
 
 <body class="bg-dark">
+    <div id="sidebar-overlay" class="d-none"></div>
+
     <div class="h-custom-screen p-0 h-100 bg-dark">
         <div class="row g-0 h-100">
 
@@ -127,14 +129,9 @@
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-between align-items-center mb-4 small">
-                            <div class="form-check mb-0">
-                                <input class="form-check-input" type="checkbox" id="remember" name="remember">
-                                <label class="form-check-label text-muted" for="remember">
-                                    Mantener sesión iniciada
-                                </label>
-                            </div>
-                            <a href="#" class="text-decoration-none text-primary fw-semibold">
+                        <div class="d-flex justify-content-between align-items-end mb-4 small">
+
+                            <a href="#" class="text-decoration-none text-primary text-end fw-semibold">
                                 ¿Olvidaste tu contraseña?
                             </a>
                         </div>
@@ -147,11 +144,11 @@
                                     Entrar a mi cuenta
                                 </button>
                             </div>
-                            <div class="col-12">
+                            <!-- <div class="col-12">
                                 <button type="submit" class="btn btn-outline-primary w-100">
                                     <i class="fas fa-brands fa-google me-2"></i>Entrar con Google
                                 </button>
-                            </div>
+                            </div> -->
                         </div>
                     </form>
                 </div>
@@ -161,10 +158,15 @@
     </div>
     <div class="fixed-top">
         <div class="p-3 float-end">
-            <a href="#" class="text-secondary position-relative">
-                <button id="themeToggle" class="btn btn-primary">
-                    <i class="fas fa-sun"></i>
-                </button>
+            <a class=" position-relative">
+                <div class="theme-switch ">
+                    <input type="checkbox" id="themeToggle">
+                    <label for="themeToggle" class="switch border border-primary">
+                        <span class="icon moon"><i class="fas fa-moon"></i></span>
+                        <span class="icon sun"><i class="fas fa-sun"></i></span>
+                        <span class="slider"></span>
+                    </label>
+                </div>
             </a>
         </div>
 

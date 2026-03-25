@@ -69,6 +69,8 @@ class AuthController extends Controller
             session([
                 'firebase_uid' => $firebaseUid,
                 'user_id' => $user->id,
+                'user_name' => $user->name,
+                'user_email' => $user->email,
             ]);
 
             return response()->json(['success' => true]);

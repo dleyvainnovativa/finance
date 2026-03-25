@@ -37,6 +37,12 @@
             <option value="2025">2025</option>
         </select>
     </div>
+    <div class="col-auto text-start">
+        <button class="btn btn-danger" onclick="removeMultipleJournals()">
+            <i class="fas fa-trash"></i>
+        </button>
+    </div>
+
 
     <div class="col-12">
         <div class="table-responsive">
@@ -62,10 +68,13 @@
                 data-ajax="ajaxRequest">
                 <thead>
                     <tr>
+                        <th data-checkbox="true"></th>
                         <th class="" data-field="entry_date" data-footer-formatter="footerNullText" data-sortable="true">Fecha</th>
                         <th class="" data-field="entry_type_label" data-footer-formatter="footerNullText" data-sortable="true">Tipo</th>
+                        <th class="" data-visible=false data-field="debit_account_id" data-footer-formatter="footerNullText" data-sortable="true">ID</th>
                         <th class="" data-field="debit_account_name" data-footer-formatter="footerNullText" data-sortable="true">Cta Cargo</th>
                         <th class="" data-field="debit_account_code" data-footer-formatter="footerNullText" data-sortable="true">ID Contable</th>
+                        <th class="" data-visible=false data-field="credit_account_id" data-footer-formatter="footerNullText" data-sortable="true">ID</th>
                         <th class="" data-field="credit_account_name" data-footer-formatter="footerNullText" data-sortable="true">Cta Abono</th>
                         <th class="" data-field="credit_account_code" data-footer-formatter="footerNullText" data-sortable="true">ID Contable</th>
                         <th class="" data-field="description" data-footer-formatter="footerLabel" data-falign="left">Concepto</th>
