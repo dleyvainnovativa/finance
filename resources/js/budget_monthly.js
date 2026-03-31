@@ -6,6 +6,8 @@ function initRequest() {
 
 const month = document.getElementById('month-filter')?.value;
     const year = document.getElementById('year-filter')?.value;
+    const checkbox = document.getElementById('detailsCheckbox');
+    url.searchParams.set('summary', checkbox.checked ? 'true' : 'false');
 
     if (month) url.searchParams.set('month', month);
     if (year) url.searchParams.set('year', year);
@@ -180,7 +182,7 @@ if (container) {
 
 
 document.addEventListener('DOMContentLoaded', function () {
-    $('#month-filter, #year-filter').on('change', function () {
+    $('#month-filter, #year-filter, #detailsCheckbox').on('change', function () {
         initRequest();
     });
 });

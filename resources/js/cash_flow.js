@@ -6,7 +6,8 @@ function initRequest() {
 
     const month = document.getElementById('month-filter')?.value;
     const year = document.getElementById('year-filter')?.value;
-
+    const checkbox = document.getElementById('detailsCheckbox');
+    url.searchParams.set('details', checkbox.checked ? 'true' : 'false');
     if (month) url.searchParams.set('month', month);
     if (year) url.searchParams.set('year', year);
 
@@ -30,7 +31,7 @@ function initRequest() {
 initRequest();
 
 document.addEventListener('DOMContentLoaded', function () {
-    $('#month-filter, #year-filter').on('change', function () {
+    $('#month-filter, #year-filter, #detailsCheckbox').on('change', function () {
         initRequest();
     });
 });
@@ -96,7 +97,7 @@ data.forEach(section => {
                         section.data.length
                         ? section.data.map(item => `
                             
-                            <li class="list-group-item py-3">
+                            <li class="list-group-item py-3 ${item.hidden ? 'd-none': ''}">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div>
                                         <div class="">

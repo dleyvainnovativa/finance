@@ -36,6 +36,17 @@
     <div class="col-auto">
         <button id="refresh" class="btn btn-primary"><i class="fas fa-refresh"></i></button>
     </div>
+    <div class="col-auto text-start mt-auto">
+        <div class="form-check">
+            <input
+                class="form-check-input"
+                type="checkbox"
+                id="detailsCheckbox">
+            <label class="form-check-label" for="detailsCheckbox">
+                Acumulado
+            </label>
+        </div>
+    </div>
     <div class="col-12 text-dark">
         <div class="row g-4" id="cards-header">
             @include("components.loading.cards_header")

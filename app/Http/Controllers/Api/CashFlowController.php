@@ -14,7 +14,9 @@ class CashFlowController extends Controller
         $userId = $request->user()->id;
         $month = $request->get('month', now()->month);
         $year = $request->get('year', now()->year);
-        $cash_flow = self::getCashFlow($userId, $month, $year);
+        $details = $request->boolean('details');
+
+        $cash_flow = self::getCashFlow($userId, $month, $year, $details);
         $last_cash_flow = self::getCashFlowTotal($userId, self::getLastMonth($month, $year), self::getLastYear($month, $year));
         $month_variation = $cash_flow["total"] - $last_cash_flow;
         $cash_flow["total_map"][3]["total"] = $month_variation;
@@ -27,7 +29,7 @@ class CashFlowController extends Controller
             ],
         );
     }
-    public static function getCashFlow($userId, $month, $year)
+    public static function getCashFlow($userId, $month, $year, $details = false)
     {
         $results = TrialBalanceController::getTrialBalance($userId, $month, $year)->get();
         $total = 0;
@@ -302,13 +304,9 @@ class CashFlowController extends Controller
             ->whereMonth('entry_date', $month)
             ->whereYear('entry_date', $year)
             ->get();
-
         foreach ($journal as $entry) {
-
             foreach ($prefixMap as &$section) {
-
                 foreach ($section['data'] as &$item) {
-
                     if (
                         str_starts_with($entry->debit_account_code, $item['code_target']) &&
                         str_starts_with($entry->credit_account_code, $item['code_target_end'])
@@ -320,18 +318,19 @@ class CashFlowController extends Controller
                         }
                     }
                 }
-
-                unset($item); // 🔥 VERY IMPORTANT
+                unset($item);
             }
-
-            unset($section); // 🔥 VERY IMPORTANT
+            unset($section);
         }
         $totalMap = 0;
-
         foreach ($prefixMap as &$section) {
             $section['total'] = 0;
-
-            foreach ($section['data'] as $item) {
+            foreach ($section['data'] as &$item) {
+                if ($item["total"] == 0 && $details == false) {
+                    $item["hidden"] = true;
+                } else {
+                    $item["hidden"] = false;
+                }
                 $section['total'] += $item['total'];
             }
 
