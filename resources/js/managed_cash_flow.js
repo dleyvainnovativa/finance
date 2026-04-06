@@ -291,7 +291,7 @@ function buildCards(data, cash_accounts, saved_data) {
                 
                 // Fallback priority: 1. Server Save -> 2. Synced UI Typings -> 3. Backend array default
                 let valProj = 0;
-                let valProjAmount = row.amount_projection;
+                let valProjAmount = formatCurrency(row.amount_projection);
                 
                 if (savedRow) {
                     valProj = savedRow.projection;
