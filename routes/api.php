@@ -5,7 +5,7 @@ use App\Http\Controllers\Api\AverageController;
 use App\Http\Controllers\Api\BalanceSheetController;
 use App\Http\Controllers\Api\BudgetController;
 use App\Http\Controllers\Api\BudgetMonthlyController;
-use App\Http\Controllers\API\CashCountController;
+use App\Http\Controllers\Api\CashCountController;
 use App\Http\Controllers\Api\CashFlowController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\EntryController;
