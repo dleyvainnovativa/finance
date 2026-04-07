@@ -133,7 +133,7 @@ class JournalEntryController extends Controller
                 'id'                  => $entry->entry_id,
                 'entry_date'          => Carbon::parse($entry->entry_date)->format('d/m/Y'),
                 'entry_type'          => $entry->entry_type,
-                'entry_type_label'    => self::translateJournalType($entry->entry_type),
+                'entry_type_label'    => self::translateJournalType($entry->entry_type, $entry->reference),
                 'description'         => $entry->description,
                 'reference'         => $entry->reference,
                 'debit_account_id'  => $entry->debit_account_id,
@@ -283,9 +283,11 @@ class JournalEntryController extends Controller
         switch ($entry_type) {
             case 'opening_balance':
                 $entry_type = "income";
+                $reference = "m_opening_balance";
                 break;
             case 'opening_balance_credit':
                 $entry_type = "expense";
+                $reference = "m_opening_balance";
                 break;
 
             default:
@@ -930,7 +932,7 @@ class JournalEntryController extends Controller
                 'id'                  => $entry->entry_id,
                 'entry_date'          => Carbon::parse($entry->entry_date)->format('d/m/Y'),
                 'entry_type'          => $entry->entry_type,
-                'entry_type_label'    => self::translateJournalType($entry->entry_type),
+                'entry_type_label'    => self::translateJournalType($entry->entry_type, $entry->reference),
                 'description'         => $entry->description,
                 'debit_account_name'  => $entry->debit_account_name,
                 'debit_account_code'  => $entry->debit_account_code,
@@ -996,8 +998,19 @@ class JournalEntryController extends Controller
         $returned["credit"] = $totalCredit;
         return $returned;
     }
-    public static function translateJournalType(string $type): string
+    public static function translateJournalType(string $type, $reference = null): string
     {
+        // Special cases
+        if ($reference === 'm_opening_balance') {
+            if ($type === 'income') {
+                return 'Ingreso (Saldo Inicial Cuenta Deudora)';
+            }
+
+            if ($type === 'expense') {
+                return 'Gasto (Saldo Inicial Cuenta Acreedora)';
+            }
+        }
+
         $map = [
             'opening_balance' => 'Saldo Inicial Cuenta Deudora',
             'opening_balance_credit' => 'Saldo Inicial Cuenta Acreedora',
