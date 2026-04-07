@@ -8,6 +8,7 @@
 </div>
 <div class="row g-4 mt-1">
     <input id="data_url" type="hidden" value='{{route("api.cash-count")}}'>
+    <input id="difference_amount" type="hidden">
     <div class="col-auto text-start">
         <select class="form-select card-dark border border-dark text-dark" name="month" id="month-filter">
             <option value="1" selected>Enero</option>
@@ -83,6 +84,9 @@
                     </table>
                 </div>
 
+            </div>
+            <div class="card-footer border-dark card-dark text-end">
+                <button class="btn btn-primary" id="addCount">Agregar a Gastos</button>
             </div>
         </div>
     </div>

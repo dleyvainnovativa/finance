@@ -7,6 +7,7 @@ use App\Models\JournalEntry;
 use App\Models\JournalEntryLine;
 use App\Models\ChartOfAccount;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -293,6 +294,114 @@ class JournalEntryController extends Controller
 
         $results = [];
         return response()->json([$results, $month, $year], 201);
+    }
+    public function cash_count(Request $request)
+    {
+        $request->validate([
+            'debit_account_id' => ['required', 'exists:chart_of_accounts,id'],
+            'entry_month' => ['required', 'numeric'],
+            'entry_year' => ['required', 'numeric'],
+            'amount' => ['required', 'numeric']
+        ]);
+        $userId = $request->user()->id;
+
+        $month = $request->entry_month;
+        $year = $request->entry_year;
+        $amount = $request->amount;
+        $debit_account_id = $request->debit_account_id;
+
+        $entry_date = date("Y-m-d");
+        $entry_type = "expense";
+        $description = "Diferencia en Arqueo";
+        $reference = "automatic";
+
+        $entry_id = null;
+
+        if ($amount < 0) {
+            $entry_type = "expense";
+            $query_credit_account = DB::table('accounts')
+                ->where('user_id', $userId)
+                ->where('code', "500.1")->get()->first();
+
+            if ($query_credit_account) {
+                $credit_account_id = $query_credit_account->id;
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => "No se ha encontrado la cuenta de Gasto",
+                    'data' => $query_credit_account,
+                ], 500);
+            }
+        } else {
+            $entry_type = "income";
+            $query_credit_account = DB::table('accounts')
+                ->where('user_id', $userId)
+                ->where('code', "400.1")->get()->first();
+
+            if ($query_credit_account) {
+                $credit_account_id = $query_credit_account->id;
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => "No se ha encontrado la cuenta de Ingreso",
+                    'data' => $query_credit_account,
+                ], 500);
+            }
+        }
+
+
+
+        // $query_register = DB::table("journal")
+        //     ->whereRaw("MONTH(entry_date) = $month")
+        //     ->whereRaw("YEAR(entry_date) = $year")
+        //     ->where("reference", "automatic")
+        //     ->where("credit_account_id", $credit_account_id)
+        //     ->where("entry_type", "expense")
+        //     ->get()->first();
+
+        // if ($query_register) {
+        //     $registerData = [
+        //         'entry_id'           => $entry_id,
+        //         'user_id'            => $userId,
+        //         'entry_date'         => $entry_date,
+        //         'entry_type'         => $entry_type,
+        //         'description'        => $description,
+        //         'reference'          => $reference,
+        //         'amount'             => $amount,
+        //         'debit_account_id'   => $debit_account_id,
+        //         'credit_account_id'  => $credit_account_id,
+        //     ];
+        //     //     $entry_id = $query_register->entry_id;
+        //     //     self::update($entry_id, $userId, $entry_date, $entry_type, $description, $reference, $amount, $debit_account_id, $credit_account_id);
+        //     //     self::recalculateForward($debit_account_id, $month, $year, $userId);
+        //     //     self::recalculateForward($credit_account_id, $month, $year, $userId);
+        //     //     self::setOpeningDeficit($year, $userId);
+        // } else {
+        $registerData = [
+            'entry_id'           => $entry_id,
+            'user_id'            => $userId,
+            'entry_date'         => $entry_date,
+            'entry_type'         => $entry_type,
+            'description'        => $description,
+            'reference'          => $reference,
+            'amount'             => $amount,
+            'debit_account_id'   => $debit_account_id,
+            'credit_account_id'  => $credit_account_id,
+        ];
+        self::create($userId, $entry_date, $entry_type, $description, $reference, $amount, $debit_account_id, $credit_account_id);
+        self::recalculateForward($debit_account_id, $month, $year, $userId);
+        self::recalculateForward($credit_account_id, $month, $year, $userId);
+        self::setCloseAccounts($year, $userId);
+        self::setOpeningDeficit($year, $userId);
+        // }
+
+        $results = [];
+        return response()->json([
+            'success' => true,
+            'data' => $registerData,
+            // 'query_register' => $query_register,
+            'query_credit_account' => $query_credit_account,
+        ], 201);
     }
     public function change(Request $request)
     {

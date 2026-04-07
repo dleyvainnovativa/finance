@@ -35,33 +35,46 @@
     <div class="col-auto">
         <button id="refresh" class="btn btn-primary"><i class="fas fa-refresh"></i></button>
     </div>
+    <div class="col-auto text-start mt-auto">
+        <div class="form-check">
+            <input
+                class="form-check-input"
+                type="checkbox"
+                id="detailsCheckbox">
+            <label class="form-check-label" for="detailsCheckbox">
+                Mostrar detalles
+            </label>
+        </div>
+    </div>
 
-    <div class="col-auto">
-        <ul class="nav nav-pills" role="tablist">
+    <div class="col-12">
+        <div class="col-auto">
+            <ul class="nav nav-pills" role="tablist">
 
-            <li class="nav-item pe-2" role="presentation">
-                <button
-                    class="btn active btn-outline-primary"
-                    data-bs-toggle="tab"
-                    data-bs-target="#tab-table"
-                    type="button"
-                    role="tab">
-                    <i class="fas fa-table me-2"></i>Tablas
-                </button>
-            </li>
+                <li class="nav-item pe-2" role="presentation">
+                    <button
+                        class="btn active btn-outline-primary"
+                        data-bs-toggle="tab"
+                        data-bs-target="#tab-table"
+                        type="button"
+                        role="tab">
+                        <i class="fas fa-table me-2"></i>Tablas
+                    </button>
+                </li>
 
-            <li class="nav-item pe-2" role="presentation">
-                <button
-                    class="btn btn-outline-primary"
-                    data-bs-toggle="tab"
-                    data-bs-target="#tab-chart"
-                    type="button"
-                    role="tab">
-                    <i class="fas fa-chart-line me-2"></i>Gráficas
-                </button>
-            </li>
+                <li class="nav-item pe-2" role="presentation">
+                    <button
+                        class="btn btn-outline-primary"
+                        data-bs-toggle="tab"
+                        data-bs-target="#tab-chart"
+                        type="button"
+                        role="tab">
+                        <i class="fas fa-chart-line me-2"></i>Gráficas
+                    </button>
+                </li>
 
-        </ul>
+            </ul>
+        </div>
     </div>
 </div>
 

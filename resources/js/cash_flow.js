@@ -28,9 +28,10 @@ function initRequest() {
             console.log(error);
         });
 }
-initRequest();
 
 document.addEventListener('DOMContentLoaded', function () {
+initRequest();
+
     $('#month-filter, #year-filter, #detailsCheckbox').on('change', function () {
         initRequest();
     });

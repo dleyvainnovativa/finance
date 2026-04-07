@@ -3,9 +3,10 @@ function initRequest() {
     let data_url = document.getElementById("data_url").value;
     let params = null;
         const url = new URL(data_url);
-
+const checkbox = document.getElementById('detailsCheckbox');
 const month = document.getElementById('month-filter')?.value;
     const year = document.getElementById('year-filter')?.value;
+    url.searchParams.set('details', checkbox.checked ? 'true' : 'false');
 
     if (month) url.searchParams.set('month', month);
     if (year) url.searchParams.set('year', year);
@@ -28,7 +29,6 @@ const month = document.getElementById('month-filter')?.value;
             console.log(error);
         });
 }
-initRequest();
 
 function buildHeaderCards(data) {
     let html = '';
@@ -111,11 +111,12 @@ function buildCards(data) {
                 `;
 
                 group.data.forEach(row => {
+                    console.log(row.hidden);
                     html += `
-                        <tr>
+                        <tr class="${row.hidden ? 'd-none': ''}">
                             <td>${row.account_code}</td>
                             <td>${row.account_name}</td>
-                            <td class="text-end">${formatCurrency(row.amount)}</td>
+                            <td class="text-end ">${formatCurrency(row.amount)}</td>
                             <td class="text-end">${formatMoney(row.percent)}</td>
                         </tr>
                     `;
@@ -127,7 +128,13 @@ function buildCards(data) {
                     </div>
                 `;
             } else {
-                html += `<p class="text-muted mb-0">No records</p>`;
+                html += `
+            <div class="card card-dark border border-dark">
+            <div class="card-body p-4">
+            <p class="text-muted mb-0">No hay registros</p>
+            </div>
+            </div>
+            `;
             }
             // Total footer
             html += `
@@ -177,7 +184,9 @@ if (container) {
 
 
 document.addEventListener('DOMContentLoaded', function () {
-    $('#month-filter, #year-filter').on('change', function () {
+initRequest();
+
+    $('#month-filter, #year-filter, #detailsCheckbox').on('change', function () {
         initRequest();
     });
 });

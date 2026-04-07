@@ -3,8 +3,9 @@
     <div class="modal-dialog modal-dialog-centered ">
         <div class="modal-content card-dark border border-dark text-dark">
 
-            <div class="modal-header border-bottom border-dark">
-                <h5 class="modal-title">Calculator</h5>
+            <!-- <div class="modal-header border-bottom border-dark"> -->
+            <div class="modal-header border-bottom border-dark draggable-header">
+                <h5 class="modal-title">Calculadora</h5>
                 <button type="button" class="btn ms-auto" data-bs-dismiss="modal" aria-label="Cerrar">
                     <i class="fas fa-xmark fa-lg text-dark"></i>
                 </button>
@@ -22,31 +23,33 @@
                     <div class="col-3"><button class="btn btn-secondary w-100" onclick="clearCalc()">C</button></div>
                     <div class="col-3"><button class="btn btn-secondary w-100" onclick="append('%')">%</button></div>
                     <div class="col-3"><button class="btn btn-secondary w-100" onclick="append('/')">÷</button></div>
-                    <div class="col-3"><button class="btn btn-secondary w-100" onclick="append('*')">×</button></div>
+                    <div class="col-3"><button class="btn btn-secondary w-100" onclick="append('<')"><i class="fas fa-backspace"></i></button></div>
 
                     <!-- Row 2 -->
                     <div class="col-3"><button class="btn btn-dark text-dark border border-dark w-100" onclick="append('7')">7</button></div>
                     <div class="col-3"><button class="btn btn-dark text-dark border border-dark w-100" onclick="append('8')">8</button></div>
                     <div class="col-3"><button class="btn btn-dark text-dark border border-dark w-100" onclick="append('9')">9</button></div>
-                    <div class="col-3"><button class="btn btn-secondary w-100" onclick="append('-')">-</button></div>
+                    <div class="col-3"><button class="btn btn-secondary w-100" onclick="append('*')">×</button></div>
+
 
                     <!-- Row 3 -->
                     <div class="col-3"><button class="btn btn-dark text-dark border border-dark w-100" onclick="append('4')">4</button></div>
                     <div class="col-3"><button class="btn btn-dark text-dark border border-dark w-100" onclick="append('5')">5</button></div>
                     <div class="col-3"><button class="btn btn-dark text-dark border border-dark w-100" onclick="append('6')">6</button></div>
-                    <div class="col-3"><button class="btn btn-secondary w-100" onclick="append('+')">+</button></div>
+                    <div class="col-3"><button class="btn btn-secondary w-100" onclick="append('-')">-</button></div>
 
                     <!-- Row 4 -->
                     <div class="col-3"><button class="btn btn-dark text-dark border border-dark w-100" onclick="append('1')">1</button></div>
                     <div class="col-3"><button class="btn btn-dark text-dark border border-dark w-100" onclick="append('2')">2</button></div>
                     <div class="col-3"><button class="btn btn-dark text-dark border border-dark w-100" onclick="append('3')">3</button></div>
-                    <div class="col-3" rowspan="2">
-                        <button class="btn btn-success w-100 h-100" onclick="calculate()">=</button>
-                    </div>
+                    <div class="col-3"><button class="btn btn-secondary w-100" onclick="append('+')">+</button></div>
 
                     <!-- Row 5 -->
                     <div class="col-6"><button class="btn btn-dark text-dark border border-dark w-100" onclick="append('0')">0</button></div>
                     <div class="col-3"><button class="btn btn-dark text-dark border border-dark w-100" onclick="append('.')">.</button></div>
+                    <div class="col-3" rowspan="2">
+                        <button class="btn btn-success w-100 h-100" onclick="calculate()">=</button>
+                    </div>
 
                 </div>
 
@@ -59,7 +62,11 @@
     const display = document.getElementById('calc-display');
 
     function append(value) {
-        display.value += value;
+        if (value == "<") {
+            display.value = display.value.slice(0, -1);
+        } else {
+            display.value += value;
+        }
     }
 
     function clearCalc() {
@@ -126,4 +133,45 @@
             clearCalc();
         }
     });
+</script>
+
+<script>
+    const modalDialog = document.querySelector('#calculatorModal .modal-dialog');
+    const modalHeader = document.querySelector('#calculatorModal .draggable-header');
+
+    let isDragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    modalHeader.addEventListener('mousedown', (e) => {
+        isDragging = true;
+
+        const rect = modalDialog.getBoundingClientRect();
+
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+
+        modalDialog.style.position = 'fixed';
+        // modalDialog.style.margin = auto;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+
+        modalDialog.style.left = `${e.clientX - offsetX}px`;
+        modalDialog.style.top = `${e.clientY - offsetY}px`;
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    // Optional: reset position when modal closes
+    document.getElementById('calculatorModal')
+        .addEventListener('hidden.bs.modal', () => {
+            modalDialog.style.left = '';
+            modalDialog.style.top = '';
+            modalDialog.style.position = '';
+            modalDialog.style.margin = '';
+        });
 </script>

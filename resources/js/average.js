@@ -27,7 +27,6 @@ const month = document.getElementById('month-filter')?.value;
             console.log(error);
         });
 }
-initRequest();
 
 function buildHeaderCards(data) {
     let html = '';
@@ -124,7 +123,13 @@ function buildCards(data) {
                     </div>
                 `;
             } else {
-                html += `<p class="text-muted mb-0">No records</p>`;
+                html += `
+            <div class="card card-dark border border-dark">
+            <div class="card-body p-4">
+            <p class="text-muted mb-0">No hay registros</p>
+            </div>
+            </div>
+            `;
             }
             // Total footer
             html += `
@@ -174,6 +179,8 @@ if (container) {
 
 
 document.addEventListener('DOMContentLoaded', function () {
+initRequest();
+
     $('#month-filter, #year-filter').on('change', function () {
         initRequest();
     });

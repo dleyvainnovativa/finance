@@ -344,9 +344,9 @@ tr,
         /* border-bottom: 1px solid red !important */
         border-bottom: none !important
 }
-.table{
+/* .table{ */
     /* border: 1px solid var(--muted-bg-color); */
-}
+/* } */
 
 .fixed-table-body{
     /* border-color: var(--muted-bg-color); */
@@ -959,4 +959,7 @@ button.gridjs-sort-neutral{
 
 .fixed-bottom{
     z-index: 998;
+}
+.draggable-header {
+    cursor: move;
 }

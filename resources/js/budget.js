@@ -4,7 +4,7 @@ function initRequest() {
     let params = null;
     const url = new URL(data_url);
 
-    const month = document.getElementById('month-filter')?.value;
+    const month = 12;
     const year = document.getElementById('year-filter')?.value;
 
     if (month) url.searchParams.set('month', month);
@@ -27,7 +27,6 @@ function initRequest() {
             console.log(error);
         });
 }
-initRequest();
 
 function buildHeaderCards(data) {
     let html = '';
@@ -197,7 +196,13 @@ function buildCards(data, year) {
                     </div>
                 `;
             } else {
-                html += `<p class="text-muted mb-0">No records</p>`;
+                html += `
+            <div class="card card-dark border border-dark">
+            <div class="card-body p-4">
+            <p class="text-muted mb-0">No hay registros</p>
+            </div>
+            </div>
+            `;
             }
             // Total footer
             html += `
@@ -281,7 +286,9 @@ function buildPrJson(table) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    $('#month-filter, #year-filter').on('change', function () {
+initRequest();
+
+    $('#year-filter').on('change', function () {
         initRequest();
     });
 });

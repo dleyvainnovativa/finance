@@ -29,7 +29,6 @@ const month = document.getElementById('month-filter')?.value;
             console.log(error);
         });
 }
-initRequest();
 
 function buildHeaderCards(data) {
     let html = '';
@@ -107,7 +106,7 @@ function buildCards(data) {
                                     <th data-field="amount_budget" class="p-3 text-end">Presupuesto</th>
                                     <th data-field="amount" class="p-3 text-end">Real</th>
                                     <th data-field="amount_difference" class="p-3 text-end">Diferencia</th>
-                                    <th data-field="percent" class="p-3 text-end">%</th>
+                                    <th data-field="amount_percent" class="p-3 text-end">%</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -121,7 +120,7 @@ function buildCards(data) {
                             <td class="text-end">${formatCurrency(row.amount_budget)}</td>
                             <td class="text-end">${formatCurrency(row.amount)}</td>
                             <td class="text-end">${formatCurrency(row.amount_difference)}</td>
-                            <td class="text-end">${formatMoney(row.percent)}</td>
+                            <td class="text-end">${formatMoney(row.amount_percent)}</td>
                         </tr>
                     `;
                 });
@@ -132,7 +131,13 @@ function buildCards(data) {
                     </div>
                 `;
             } else {
-                html += `<p class="text-muted mb-0">No records</p>`;
+                html += `
+            <div class="card card-dark border border-dark">
+            <div class="card-body p-4">
+            <p class="text-muted mb-0">No hay registros</p>
+            </div>
+            </div>
+            `;
             }
             // Total footer
             html += `
@@ -182,6 +187,8 @@ if (container) {
 
 
 document.addEventListener('DOMContentLoaded', function () {
+initRequest();
+
     $('#month-filter, #year-filter, #detailsCheckbox').on('change', function () {
         initRequest();
     });
@@ -198,9 +205,9 @@ function customViewFormatter(data) {
             .replace('%amount%',formatCurrency(row.amount))
             .replace('%amount_difference%',formatCurrency(row.amount_difference))
             .replace('%amount_budget%',formatCurrency(row.amount_budget))
-            .replace('%percent_bar%', `style="width: ${row.percent}%"`)
+            .replace('%percent_bar%', `style="width: ${row.amount_percent}%"`)
             .replace('%difference_class%',formatBadgeClass(row.amount_difference))
-            .replace('%percent%', (row.percent));
+            .replace('%percent%', (row.amount_percent));
 
         html += card;
     });

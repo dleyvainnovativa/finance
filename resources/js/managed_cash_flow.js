@@ -37,7 +37,6 @@ function initRequest() {
         });
 }
 
-initRequest();
 
 // --- Header Cards Builder ---
 function buildHeaderCards(data) {
@@ -607,6 +606,8 @@ function saveDataSilent() {
 
 // --- 6. Event Listeners & Helpers ---
 document.addEventListener('DOMContentLoaded', function() {
+initRequest();
+
     $('#month-filter, #year-filter, #detailsCheckbox').on('change', initRequest);
     document.getElementById("refresh").addEventListener("click", initRequest);
     document.getElementById("save").addEventListener("click", saveData);

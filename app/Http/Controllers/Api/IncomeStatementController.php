@@ -12,12 +12,13 @@ class IncomeStatementController extends Controller
     {
         $userId = $request->user()->id;
         $month = $request->get('month', now()->month);
+        $details = $request->boolean('details');
         // $month = 1;
         $year = $request->get('year', now()->year);
         if ($month == "total") {
-            $incomeSt = self::getIncomeStatement($userId, 12, $year, true);
+            $incomeSt = self::getIncomeStatement($userId, 12, $year, true, $details);
         } else {
-            $incomeSt = self::getIncomeStatement($userId, $month, $year);
+            $incomeSt = self::getIncomeStatement($userId, $month, $year, false, $details);
         }
 
         return response()->json(
@@ -27,7 +28,7 @@ class IncomeStatementController extends Controller
             ],
         );
     }
-    public static function getIncomeStatement($userId, $month, $year, $summary = null)
+    public static function getIncomeStatement($userId, $month, $year, $summary = null, $details = true)
     {
         // $year = 2026;
         $results = [];
@@ -128,7 +129,7 @@ class IncomeStatementController extends Controller
 
         $data = [];
 
-        $rows = $results->map(function ($entry) use (&$prefixMap) {
+        $rows = $results->map(function ($entry) use (&$prefixMap, $details) {
 
             foreach ($prefixMap as &$group) {
 
@@ -153,7 +154,10 @@ class IncomeStatementController extends Controller
                     }
                     $group['total_sum'] += $entry->total;
                     $entry->amount = $amount;
-                    $group['data'][] = $entry;
+                    if ($amount == 0 && !$details) {
+                    } else {
+                        $group['data'][] = $entry;
+                    }
                     break 2;
                 }
             }
@@ -202,6 +206,11 @@ class IncomeStatementController extends Controller
             }
 
             foreach ($group['data'] as &$row) {
+                // if ($row->amount == 0 && $details == false) {
+                //     $row->hidden = true;
+                // } else {
+                //     $row->hidden = false;
+                // }
 
                 if ($totalIncomes > 0) {
                     $row->percent = round(
