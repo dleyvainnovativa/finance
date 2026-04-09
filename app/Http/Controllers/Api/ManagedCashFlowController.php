@@ -576,12 +576,13 @@ class ManagedCashFlowController extends Controller
                 $totalAttribute = $groupIndex[$save["key"]]["total_attribute"];
 
                 if ($typeSaved === 'credit') {
-                    if ($save["total"]  != 0 || $totalExpenses != 0) {
+                    if ($totalExpenses != 0) {
                         $save["percent"] = ($save["total"] / $totalExpenses) * 100;
                     } else {
                         $save["percent"] = 0;
                     }
-                    if ($save["projection"]  != 0 || $totalExpensesProjections != 0) {
+
+                    if ($totalExpensesProjections != 0) {
                         $save["percent_projection"] = ($save["projection"] / $totalExpensesProjections) * 100;
                     } else {
                         $save["percent_projection"] = 0;
@@ -589,12 +590,13 @@ class ManagedCashFlowController extends Controller
                 }
 
                 if ($typeSaved === 'debit') {
-                    if ($save["projection"]  != 0 || $totalIncomesProjections != 0) {
+                    if ($totalIncomesProjections != 0) {
                         $save["percent_projection"] = ($save["projection"] / $totalIncomesProjections) * 100;
                     } else {
                         $save["percent_projection"] = 0;
                     }
-                    if ($save["total"]  != 0 || $totalIncomes != 0) {
+
+                    if ($totalIncomes != 0) {
                         $save["percent"] = ($save["total"] / $totalIncomes) * 100;
                     } else {
                         $save["percent"] = 0;
