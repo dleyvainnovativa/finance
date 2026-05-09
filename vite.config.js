@@ -25,6 +25,7 @@ export default defineConfig({
                 'resources/js/budget_monthly.js',
                 'resources/js/dashboard.js',
                 'resources/js/cash_count.js',
+                'resources/js/profile.js',
             ],
             refresh: true,
         }),

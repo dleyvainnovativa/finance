@@ -171,7 +171,7 @@ function buildCards(data, year) {
 <tr data-amount="${row.amount}" data-account="${row.account_id}">
     <td>${row.account_code}</td>
     <td>${row.account_name}</td>
-    <td class="text-end">${formatMoney(row.amount)}</td>
+    <td class="text-end">${formatCurrency(row.amount)}</td>
     <td>${row.percent}</td>
 
     <td class="text-end">
@@ -183,9 +183,9 @@ function buildCards(data, year) {
                value="${row.pr}">
     </td>
 
-    <td class="text-end anual">${formatMoney(row.annual)}</td>
+    <td class="text-end anual">${formatCurrency(row.annual)}</td>
     <td class="text-end pl">${row.pl}%</td>
-    <td class="text-end mensual">${formatMoney(row.monthly)}</td>
+    <td class="text-end mensual">${formatCurrency(row.monthly)}</td>
 </tr>
 `;
                 });
@@ -247,7 +247,7 @@ function recalcTable(table) {
         const pr = parseFloat(row.querySelector('.pr-input').value) || 0;
 
         const anual = amount * (pr / 100);
-        row.querySelector('.anual').innerText = formatMoney(anual);
+        row.querySelector('.anual').innerText = formatCurrency(anual);
 
         row.dataset.anual = anual;
         total_anually += anual;
@@ -261,7 +261,7 @@ function recalcTable(table) {
         const mensual = anual / 12;
 
         row.querySelector('.pl').innerText = pl.toFixed(2) + '%';
-        row.querySelector('.mensual').innerText = formatMoney(mensual);
+        row.querySelector('.mensual').innerText = formatCurrency(mensual);
     });
 
     return total_anually;
@@ -302,7 +302,7 @@ function customViewFormatter(data) {
         let card = template
             .replace('%title%', row.account_name)
             .replace('%code%', row.account_code)
-            .replace('%amount%', row.total > 0 ? formatMoney(row.total) : "0.00")
+            .replace('%amount%', row.total > 0 ? formatCurrency(row.total) : "0.00")
 
         html += card;
     });

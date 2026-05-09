@@ -963,3 +963,15 @@ button.gridjs-sort-neutral{
 .draggable-header {
     cursor: move;
 }
+
+.blur-sensitive .text-muted, .blur-sensitive .text-success {
+    filter: blur(10px);
+    user-select: none;
+    transition: filter .2s ease;
+}
+
+
+.dropdown-item:focus, .dropdown-item:focus i{
+    background-color: var(--primary-color-hover) !important;
+    color: var(--white-color) !important;
+}

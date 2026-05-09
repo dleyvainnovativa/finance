@@ -62,7 +62,8 @@ class BudgetMonthlyController extends Controller
                                 $budget_amount = $budget_entry->monthly * $month;
                                 $entry->amount_budget = $budget_amount;
                                 $entry->amount_difference = $budget_amount - $entry->amount;
-                                if ($budget_entry->budget_amount != 0) {
+                                if ($budget_amount != 0) {
+                                    // if ($budget_entry->budget_amount != 0) {
                                     $entry->amount_percent = ($entry->amount * 100) / $budget_amount;
                                 } else {
                                     $entry->amount_percent = 0;

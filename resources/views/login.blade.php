@@ -131,7 +131,7 @@
 
                         <div class="d-flex justify-content-between align-items-end mb-4 small">
 
-                            <a href="#" class="text-decoration-none text-primary text-end fw-semibold">
+                            <a data-bs-toggle="modal" data-bs-target="#forgetModal" class="text-decoration-none text-primary text-end fw-semibold">
                                 ¿Olvidaste tu contraseña?
                             </a>
                         </div>
@@ -171,6 +171,9 @@
         </div>
 
     </div>
+    @include("components.forget")
+    @include("components.alert")
+
 </body>
 
 </html>

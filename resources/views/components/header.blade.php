@@ -20,7 +20,7 @@
         </a>
         <div class="dropdown profile">
             <a class="d-flex align-items-center dropdown-toggle text-decoration-none" data-bs-toggle="dropdown">
-                <div class="btn btn-outline-primary rounded-circle">
+                <div class="btn btn-outline-primary rounded">
                     <i class="fa-regular fa-user"></i>
                 </div>
             </a>
@@ -48,7 +48,7 @@
                     </div>
                 </li>
                 <li>
-                    <a class="dropdown-item d-flex align-items-center py-3 text-dark" href="#">
+                    <a class="dropdown-item d-flex align-items-center py-3 text-dark" href="{{route('profile')}}">
                         <i class="fas fa-user text-primary me-3"></i> Mi perfil
                     </a>
                 </li>

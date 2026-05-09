@@ -7,10 +7,13 @@
         <h3 id="main_title" class="display">Dashboard</h3>
         <p class="text-muted pb-0 mb-0">Manage your journal entries</p>
     </div>
-    <button id="refresh" class="btn btn-primary"><i class="fas fa-refresh"></i></button>
+    <div>
+        <button id="hidden_numbers" class="btn btn-outline-primary"><i class="fas fa-eye-slash"></i></button>
+        <button id="refresh" class="btn btn-primary"><i class="fas fa-refresh"></i></button>
+    </div>
 </div>
 
-<div class="row g-4 mt-1">
+<div class="row g-4 mt-1 blur-sensitive" id="dashboard-container">
     <!-- <div class="col-auto">
     </div> -->
     <!-- <div class="col-12 text-dark">
@@ -19,7 +22,7 @@
             @include("components.loading.cards_header")
         </div>
     </div> -->
-    <div class="col-12 text-dark">
+    <!-- <div class="col-12 text-dark">
         <div class="row g-2">
             <div class="col-8 my-auto">
                 <h4 class="fw-bold text-dark">Cuentas de Efectivo y Tarjetas de Debito</h4>
@@ -31,20 +34,42 @@
         <div class="row g-4" id="cards-debit-accounts">
             @include("components.loading.cards_header")
         </div>
+    </div> -->
+    <div class="col-12 text-dark">
+        <div class="row g-2 mb-3">
+            <div class="col-8 my-auto">
+                <select id="select-debit-accounts" class="form-select card-dark border border-dark text-dark w-100">
+                </select>
+            </div>
+            <div class="col-4 my-auto">
+                <h5 id="cards-debit-accounts-total"
+                    class="text-end text-success fw-bold">
+                    0.00
+                </h5>
+            </div>
+        </div>
+        <div class="row g-4" id="cards-debit-accounts">
+            @include("components.loading.cards_header")
+        </div>
     </div>
     <div class="col-12 text-dark">
-        <div class="row ">
+        <div class="row g-2 mb-3">
             <div class="col-8 my-auto">
-                <h4 class="fw-bold text-dark">Cuentas de Tarjetas de Credito</h4>
+                <select id="select-credit-accounts" class="form-select card-dark border border-dark text-dark w-100">
+                </select>
             </div>
-            <div class="col-4 me-auto my-auto">
-                <h5 id="cards-credit-accounts-total" class="text-end text-danger fw-bold">0.00</h5>
+            <div class="col-4 my-auto">
+                <h5 id="cards-credit-accounts-total"
+                    class="text-end text-success fw-bold">
+                    0.00
+                </h5>
             </div>
         </div>
         <div class="row g-4" id="cards-credit-accounts">
             @include("components.loading.cards_header")
         </div>
     </div>
+
     <div class="col-12 text-dark">
         <h4 class="fw-bold text-dark">Estado de Posición Financiera</h4>
         <div class="row g-4" id="cards-header-balance">

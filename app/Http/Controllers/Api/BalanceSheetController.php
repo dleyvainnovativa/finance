@@ -254,14 +254,14 @@ class BalanceSheetController extends Controller
             $dividedKey = $group["divided"];
 
             foreach ($group["data"] as $key => &$entry) {
-                if ($entry->amount > 0 && $totalGroup > 0) {
+                if ($totalGroup > 0) {
                     $entry->percent = round(($entry->amount / $totalGroup) * 100, 2);
                 } else {
                     $entry->percent = 0;
                 }
                 if (!empty($dividedKey)) {
                     $groupedCalculated = $groupIndex[$dividedKey]['total'];
-                    if ($entry->amount > 0 && $groupedCalculated > 0) {
+                    if ($groupedCalculated > 0) {
                         $entry->percent_group = round(($entry->amount / $groupedCalculated) * 100, 2);
                     } else {
                         $entry->percent_group = 0;
@@ -269,7 +269,7 @@ class BalanceSheetController extends Controller
                 }
             }
             if (!empty($dividedKey)) {
-                if ($totalGroup > 0 &&  $groupIndex[$dividedKey]['total'] > 0) {
+                if ($groupIndex[$dividedKey]['total'] > 0) {
                     $group["percent_group"] =
                         round(($totalGroup / $groupIndex[$dividedKey]['total']) * 100, 2);
                 }

@@ -114,7 +114,7 @@ function buildCards(data) {
                         <tr>
                             <td>${row.account_code}</td>
                             <td>${row.account_name}</td>
-                            <td class="text-end">${formatMoney(row.amount)}</td>
+                            <td class="text-end">${formatCurrency(row.amount)}</td>
                             <td class="text-end">${formatMoney(row.percent)}</td>
                             <td class="text-end">${formatMoney(row.percent_group)}</td>
                         </tr>

@@ -3,12 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Api\AccountController;
+use App\Mail\AlertMail;
+use App\Mail\ForgetMail;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 // use Kreait\Firebase\Auth as FirebaseAuth;
 use Kreait\Firebase\JWT\IdTokenVerifier;
 use Kreait\Firebase\Contract\Auth as FirebaseAuth;
-
+use Jenssegers\Agent\Agent;
 
 
 class AuthController extends Controller
@@ -25,29 +30,19 @@ class AuthController extends Controller
         $request->validate([
             'token' => 'required|string',
         ]);
-
         try {
             $verifier = IdTokenVerifier::createWithProjectId(
                 env("VITE_FIREBASE_PROJECT_ID")
             );
-
-            // ✅ THIS is the correct leeway usage
             $verifiedToken = $verifier->verifyIdTokenWithLeeway(
                 $request->token,
                 10 // seconds
             );
-            // $verifiedToken = $this->auth->verifyIdToken($request->token);
-            // $firebaseUid = $verifiedToken->claims()->get('sub');
             $firebaseUid = $verifiedToken->payload()['sub'];
-
-
-
             $firebaseUser = $this->auth->getUser($firebaseUid);
-
             $user = User::where('firebase_uid', $firebaseUid)
                 ->orWhere('email', $firebaseUser->email)
                 ->first();
-
             if (!$user) {
                 // New user
                 $user = User::create([
@@ -57,14 +52,13 @@ class AuthController extends Controller
                 ]);
                 AccountController::setDefaults($user->id);
             } else {
-                // Existing user → ensure firebase_uid is set
                 if (!$user->firebase_uid) {
                     $user->update([
                         'firebase_uid' => $firebaseUid,
                     ]);
                 }
             }
-
+            self::suspiciousLogin($request, $user);
 
             session([
                 'firebase_uid' => $firebaseUid,
@@ -72,13 +66,77 @@ class AuthController extends Controller
                 'user_name' => $user->name,
                 'user_email' => $user->email,
             ]);
-
             return response()->json(['success' => true]);
         } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage()
             ], 401);
+        }
+    }
+
+    private static function suspiciousLogin(Request $request, User $user)
+    {
+        $currentIp = $request->ip();
+        $currentUserAgent = $request->userAgent();
+        $existingDevice = DB::table('login_devices')
+            ->where('user_id', $user->id)
+            ->where('ip_address', $currentIp)
+            ->where('user_agent', $currentUserAgent)
+            ->exists();
+        if (!$existingDevice) {
+            $agent = new Agent();
+            $agent->setUserAgent($currentUserAgent);
+            $device =
+                $agent->platform() . ' - ' .
+                $agent->browser();
+            Mail::to($user->email)->send(
+                new AlertMail(
+                    now()->format('d-m-Y H:i:s'),
+                    $device,
+                    $currentIp
+                )
+            );
+            DB::table('login_devices')->insert([
+                'user_id' => $user->id,
+                'ip_address' => $currentIp,
+                'user_agent' => $currentUserAgent,
+                'last_login_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+    }
+
+    public function forget(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email'
+        ]);
+
+        try {
+            $email = $request->email;
+            $user = User::where('email', $email)->first();
+            if (!$user) {
+                throw new Exception("Correo no asociado a usuario");
+            }
+            $auth = app('firebase.auth');
+
+            $link = $auth->getPasswordResetLink($email);
+
+            Mail::to($email)->send(
+                new ForgetMail($link, $email)
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Correo enviado, revisa tu bandeja'
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 

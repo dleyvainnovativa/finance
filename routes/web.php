@@ -9,6 +9,8 @@ Route::get('/')->name('home');
 Route::get('/login', function () {
     return view('login');
 })->name('login');
+Route::post('/forget', [AuthController::class, 'forget'])->name('forget');
+
 
 Route::post('/auth/firebase', [AuthController::class, 'firebaseLogin']);
 Route::get('/logout', [AuthController::class, 'logout'])->name("logout");
@@ -17,6 +19,9 @@ Route::middleware('firebase.auth')->group(function () {
     Route::get('/', function () {
         return view('pages.dashboard');
     })->name("home");
+    Route::get('/profile', function () {
+        return view('pages.profile');
+    })->name("profile");
     Route::get('/accounts', function () {
         return view('pages.accounts');
     })->name("accounts");

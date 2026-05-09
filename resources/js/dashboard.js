@@ -19,12 +19,13 @@ const month = document.getElementById('month-filter')?.value;
         .then(res => res.json())
         .then(data => {
             // console.log(data);
-            buildAccounts(data.debit_accounts, "debit-accounts");
-            buildAccounts(data.credit_accounts, "credit-accounts");
+            initAccountGroups(data.debit_accounts, "debit-accounts");
+            initAccountGroups(data.credit_accounts, "credit-accounts");
             buildHeaderCards(data.income_month, "income_month");
             buildHeaderCards(data.income_year, "income_year");
             buildHeaderCards(data.balance, "balance");
             buildTable(data.journal, "journal-table");
+            
             // params.success(data);
         })
         .catch((error) => {
@@ -32,6 +33,26 @@ const month = document.getElementById('month-filter')?.value;
         });
 }
 initRequest();
+
+function initAccountGroups(groups, id) {
+    const select = document.getElementById(`select-${id}`);
+    let options = '';
+    groups.forEach((group, index) => {
+        options += `
+            <option value="${index}">
+                ${group.name}
+            </option>
+        `;
+    });
+    select.innerHTML = options;
+    if (groups.length > 0) {
+        buildAccounts(groups[0].accounts, id);
+    }
+    select.addEventListener('change', function () {
+        const selectedIndex = parseInt(this.value);
+        buildAccounts(groups[selectedIndex].accounts, id);
+    });
+}
 
 function buildAccounts(data, id) {
     let html = '';
@@ -120,3 +141,17 @@ function buildTable(data, id) {
 }
 
 document.getElementById("refresh").addEventListener("click", initRequest);
+document.getElementById("hidden_numbers").addEventListener("click", toggleSensitiveData);
+
+
+
+function toggleSensitiveData() {
+
+    const elements = document
+        .getElementById("dashboard-container")
+        // .querySelectorAll(".text-success,.text-muted");
+    elements.classList.toggle("blur-sensitive");
+    // elements.forEach(element => {
+    //     element.classList.toggle("blur-sensitive");
+    // });
+}

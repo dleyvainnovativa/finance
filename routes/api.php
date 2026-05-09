@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\IncomeStatementController;
 use App\Http\Controllers\Api\JournalEntryController;
 use App\Http\Controllers\Api\ManagedCashFlowController;
 use App\Http\Controllers\Api\TrialBalanceController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -49,4 +50,7 @@ Route::middleware('firebase.jwt')->group(function () {
     Route::delete('/entries/bulk-delete', [JournalEntryController::class, 'bulkDelete'])->name('entries.bulk-delete');
     Route::post('/entries/import', [JournalEntryController::class, 'import'])->name('entries.import');
     Route::get('/cash_count', [CashCountController::class, 'index'])->name('api.cash-count');
+    Route::get('/profile', [UserController::class, 'index'])->name('api.profile');
+    Route::put('/profile', [UserController::class, 'edit'])->name('api.profile.edit');
+    Route::put('/profile/password', [UserController::class, 'password'])->name('api.profile.password');
 });
